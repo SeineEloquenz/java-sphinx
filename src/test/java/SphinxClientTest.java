@@ -11,15 +11,8 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
-public class SphinxClient_Test {
-    class PkiEntry {
-        BigInteger x;
-        ECPoint y;
-
-        public PkiEntry(BigInteger x, ECPoint y) {
-            this.x = x;
-            this.y = y;
-        }
+public class SphinxClientTest {
+    record PkiEntry(BigInteger x, ECPoint y) {
     }
 
     private SphinxParams params;
@@ -29,13 +22,13 @@ public class SphinxClient_Test {
     private int[] useNodes;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         params = new SphinxParams();
 
         int r = 5;
 
-        pkiPriv = new HashMap<Integer, PkiEntry>();
-        HashMap<Integer, PkiEntry> pkiPub = new HashMap<Integer, PkiEntry>();
+        pkiPriv = new HashMap<>();
+        HashMap<Integer, PkiEntry> pkiPub = new HashMap<>();
 
         for (int i = 0; i < 10; i++) {
             BigInteger x = params.getGroup().genSecret();
@@ -67,7 +60,7 @@ public class SphinxClient_Test {
     }
 
     @Test
-    public void encodeAndDecode() throws Exception {
+    public void encodeAndDecode() {
         byte[] dest = "bob".getBytes();
         byte[] message = "this is a test".getBytes();
 
@@ -81,20 +74,20 @@ public class SphinxClient_Test {
 
         byte[] binMessage = SphinxClient.packMessage(sphinxPacket);
         SphinxPacket unpackedSphinxPacket = SphinxClient.unpackMessage(binMessage);
-        ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths;
-        HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta;
+        ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths();
+        HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta();
 
-        assertEquals(params.getHeaderLength(), unpackedParamLengths.headerLength);
-        assertEquals(params.getBodyLength(), unpackedParamLengths.bodyLength);
+        assertEquals(params.getHeaderLength(), unpackedParamLengths.headerLength());
+        assertEquals(params.getBodyLength(), unpackedParamLengths.bodyLength());
 
-        assertEquals(headerAndDelta.header.alpha, unpackedHeaderAndDelta.header.alpha);
-        assertArrayEquals(headerAndDelta.header.beta, unpackedHeaderAndDelta.header.beta);
-        assertArrayEquals(headerAndDelta.header.gamma, unpackedHeaderAndDelta.header.gamma);
-        assertArrayEquals(headerAndDelta.delta, unpackedHeaderAndDelta.delta);
+        assertEquals(headerAndDelta.header().alpha(), unpackedHeaderAndDelta.header().alpha());
+        assertArrayEquals(headerAndDelta.header().beta(), unpackedHeaderAndDelta.header().beta());
+        assertArrayEquals(headerAndDelta.header().gamma(), unpackedHeaderAndDelta.header().gamma());
+        assertArrayEquals(headerAndDelta.delta(), unpackedHeaderAndDelta.delta());
     }
 
     @Test
-    public void encodeAndDecodeMaxMessageLength() throws Exception {
+    public void encodeAndDecodeMaxMessageLength() {
         byte[] dest = "bob".getBytes();
         byte[] message = new byte[SphinxClient.getMaxPayloadSize(params) - dest.length];
         Arrays.fill(message, (byte) 0xaa);
@@ -109,16 +102,16 @@ public class SphinxClient_Test {
 
         byte[] binMessage = SphinxClient.packMessage(sphinxPacket);
         SphinxPacket unpackedSphinxPacket = SphinxClient.unpackMessage(binMessage);
-        ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths;
-        HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta;
+        ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths();
+        HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta();
 
-        assertEquals(params.getHeaderLength(), unpackedParamLengths.headerLength);
-        assertEquals(params.getBodyLength(), unpackedParamLengths.bodyLength);
+        assertEquals(params.getHeaderLength(), unpackedParamLengths.headerLength());
+        assertEquals(params.getBodyLength(), unpackedParamLengths.bodyLength());
 
-        assertEquals(headerAndDelta.header.alpha, unpackedHeaderAndDelta.header.alpha);
-        assertArrayEquals(headerAndDelta.header.beta, unpackedHeaderAndDelta.header.beta);
-        assertArrayEquals(headerAndDelta.header.gamma, unpackedHeaderAndDelta.header.gamma);
-        assertArrayEquals(headerAndDelta.delta, unpackedHeaderAndDelta.delta);
+        assertEquals(headerAndDelta.header().alpha(), unpackedHeaderAndDelta.header().alpha());
+        assertArrayEquals(headerAndDelta.header().beta(), unpackedHeaderAndDelta.header().beta());
+        assertArrayEquals(headerAndDelta.header().gamma(), unpackedHeaderAndDelta.header().gamma());
+        assertArrayEquals(headerAndDelta.delta(), unpackedHeaderAndDelta.delta());
     }
 
     @Test
@@ -173,9 +166,9 @@ public class SphinxClient_Test {
 
         while (true) {
             ProcessedPacket ret = SphinxNode.sphinxProcess(params, currentNodeKey, headerAndDelta);
-            headerAndDelta = ret.headerAndDelta;
+            headerAndDelta = ret.headerAndDelta();
 
-            byte[] encodedRouting = ret.routing;
+            byte[] encodedRouting = ret.routing();
 
             unpacker = MessagePack.newDefaultUnpacker(encodedRouting);
             int routingLen = unpacker.unpackArrayHeader();
@@ -193,10 +186,10 @@ public class SphinxClient_Test {
 
                 assertEquals(1, routingLen);
 
-                DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey, ret.headerAndDelta.delta);
+                DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey(), ret.headerAndDelta().delta());
 
-                assertArrayEquals(dest, destAndMsg.destination);
-                assertArrayEquals(message, destAndMsg.message);
+                assertArrayEquals(dest, destAndMsg.destination());
+                assertArrayEquals(message, destAndMsg.message());
 
                 break;
             }
@@ -209,16 +202,16 @@ public class SphinxClient_Test {
         byte[] message = "This is a reply".getBytes();
 
         Surb surb = SphinxClient.createSurb(params, nodesRouting, nodeKeys, surbDest);
-        HeaderAndDelta headerAndDelta = SphinxClient.packageSurb(params, surb.nymTuple, message);
+        HeaderAndDelta headerAndDelta = SphinxClient.packageSurb(params, surb.nymTuple(), message);
 
         BigInteger x = pkiPriv.get(useNodes[0]).x;
         MessageUnpacker unpacker;
 
         while (true) {
             ProcessedPacket ret = SphinxNode.sphinxProcess(params, x, headerAndDelta);
-            headerAndDelta = ret.headerAndDelta;
+            headerAndDelta = ret.headerAndDelta();
 
-            byte[] encodedRouting = ret.routing;
+            byte[] encodedRouting = ret.routing();
 
             unpacker = MessagePack.newDefaultUnpacker(encodedRouting);
             unpacker.unpackArrayHeader();
@@ -239,9 +232,9 @@ public class SphinxClient_Test {
                 unpacker.close();
 
                 assertArrayEquals(surbDest, finalDest);
-                assertArrayEquals(surb.xid, finalSurbId);
+                assertArrayEquals(surb.xid(), finalSurbId);
 
-                byte[] received = SphinxClient.receiveSurb(params, surb.keytuple, headerAndDelta.delta);
+                byte[] received = SphinxClient.receiveSurb(params, surb.keytuple(), headerAndDelta.delta());
                 assertArrayEquals(message, received);
 
                 break;
@@ -250,7 +243,7 @@ public class SphinxClient_Test {
     }
 
     @Test(expected = SphinxException.class)
-    public void randSubsetBadNu() throws Exception {
+    public void randSubsetBadNu() {
         int[] nodePool = {0,0,0,0,0};
         SphinxClient.randSubset(nodePool, nodePool.length + 1);
     }
@@ -270,9 +263,9 @@ public class SphinxClient_Test {
 
         while (true) {
             ProcessedPacket ret = SphinxNode.sphinxProcess(params, x, headerAndDelta);
-            headerAndDelta = ret.headerAndDelta;
+            headerAndDelta = ret.headerAndDelta();
 
-            byte[] encodedRouting = ret.routing;
+            byte[] encodedRouting = ret.routing();
 
             unpacker = MessagePack.newDefaultUnpacker(encodedRouting);
             int routingLen = unpacker.unpackArrayHeader();
@@ -290,16 +283,13 @@ public class SphinxClient_Test {
 
                 assertEquals(1, routingLen);
 
-                byte[] zeroes = new byte[params.getKeyLength()];
-                java.util.Arrays.fill(zeroes, (byte) 0x00);
-
                 // Corrupt payload
-                ret.headerAndDelta.delta[20]++;
+                ret.headerAndDelta().delta()[20]++;
 
-                DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey, ret.headerAndDelta.delta);
+                DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey(), ret.headerAndDelta().delta());
 
-                assertArrayEquals(dest, destAndMsg.destination);
-                assertArrayEquals(message, destAndMsg.message);
+                assertArrayEquals(dest, destAndMsg.destination());
+                assertArrayEquals(message, destAndMsg.message());
 
                 break;
             }
@@ -307,18 +297,18 @@ public class SphinxClient_Test {
     }
 
     @Test(expected = SphinxException.class)
-    public void receiveSurbBadDelta() throws Exception {
+    public void receiveSurbBadDelta() {
         byte[] surbDest = "myself".getBytes();
         byte[] message = "This is a reply".getBytes();
 
         Surb surb = SphinxClient.createSurb(params, nodesRouting, nodeKeys, surbDest);
-        HeaderAndDelta headerAndDelta = SphinxClient.packageSurb(params, surb.nymTuple, message);
-        headerAndDelta.delta[0] = 1;
-        SphinxClient.receiveSurb(params, surb.keytuple, headerAndDelta.delta);
+        HeaderAndDelta headerAndDelta = SphinxClient.packageSurb(params, surb.nymTuple(), message);
+        headerAndDelta.delta()[0] = 1;
+        SphinxClient.receiveSurb(params, surb.keytuple(), headerAndDelta.delta());
     }
 
     @Test(expected = SphinxException.class)
-    public void createForwardDestTooLong() throws Exception {
+    public void createForwardDestTooLong() {
         byte[] dest = new byte[SphinxClient.MAX_DEST_SIZE + 1];
         byte[] message = "this is a test".getBytes();
 
@@ -328,7 +318,7 @@ public class SphinxClient_Test {
     }
 
     @Test(expected = SphinxException.class)
-    public void createForwardDestAndMessageTooLong() throws Exception {
+    public void createForwardDestAndMessageTooLong() {
         byte[] dest = "bob".getBytes();
         byte[] message = new byte[(SphinxClient.getMaxPayloadSize(params) - dest.length) + 1];
 

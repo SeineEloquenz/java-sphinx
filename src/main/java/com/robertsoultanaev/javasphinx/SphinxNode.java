@@ -21,10 +21,10 @@ public class SphinxNode {
      */
     public static ProcessedPacket sphinxProcess(SphinxParams params, BigInteger secret, HeaderAndDelta headerAndDelta) {
         ECCGroup group = params.getGroup();
-        ECPoint alpha = headerAndDelta.header.alpha;
-        byte[] beta = headerAndDelta.header.beta;
-        byte[] gamma = headerAndDelta.header.gamma;
-        byte[] delta = headerAndDelta.delta;
+        ECPoint alpha = headerAndDelta.header().alpha();
+        byte[] beta = headerAndDelta.header().beta();
+        byte[] gamma = headerAndDelta.header().gamma();
+        byte[] delta = headerAndDelta.delta();
 
         ECPoint s = group.expon(alpha, secret);
         byte[] aesS = params.getAesKey(s);
@@ -60,8 +60,6 @@ public class SphinxNode {
 
         HeaderAndDelta headerAndDelta1 = new HeaderAndDelta(header, delta);
 
-        ProcessedPacket ret = new ProcessedPacket(tag, routing, headerAndDelta1, macKey);
-
-        return ret;
+        return new ProcessedPacket(tag, routing, headerAndDelta1, macKey);
     }
 }

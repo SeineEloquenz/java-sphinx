@@ -105,9 +105,8 @@ public class SphinxParams {
         byte[] r3Short = slice(r3, keyLength);
         byte[] r3Long = slice(r3, keyLength, message.length);
         c = aesCtr(key, r3Long, r3Short);
-        byte[] r4 = concatenate(r3Short, c);
 
-        return r4;
+        return concatenate(r3Short, c);
     }
 
     public byte[] lionessDec(byte[] key, byte[] message) {
@@ -124,25 +123,21 @@ public class SphinxParams {
 
         // Round 4
         byte[] r3Long = aesCtr(key, r4Long, r4Short);
-        byte[] r3Short = r4Short;
 
         // Round 3
         byte[] three = "3".getBytes();
         byte[] k2 = slice(hash(concatenate(r3Long, key, three)), keyLength);
-        byte[] r2Short = aesCtr(key, r3Short, k2);
-        byte[] r2Long = r3Long;
+        byte[] r2Short = aesCtr(key, r4Short, k2);
 
         // Round 2
-        byte[] r1Long = aesCtr(key, r2Long, r2Short);
-        byte[] r1Short = r2Short;
+        byte[] r1Long = aesCtr(key, r3Long, r2Short);
 
         // Round 1
         byte[] one = "1".getBytes();
         byte[] k0 = slice(hash(concatenate(r1Long, key, one)), keyLength);
-        byte[] c = aesCtr(key, r1Short, k0);
-        byte[] r0 = concatenate(c, r1Long);
+        byte[] c = aesCtr(key, r2Short, k0);
 
-        return r0;
+        return concatenate(c, r1Long);
     }
 
     public byte[] xorRho(byte[] key, byte[] plain) {

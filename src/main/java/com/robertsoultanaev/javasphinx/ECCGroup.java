@@ -13,8 +13,8 @@ import java.util.List;
  * Class to represent an elliptic curve group and providing methods for cryptographic computations.
  */
 public class ECCGroup {
-    public static String DEFAULT_CURVE_NAME = "secp224r1";
-    public static int DEFAULT_CURVE_NID = 713;
+    public static final String DEFAULT_CURVE_NAME = "secp224r1";
+    public static final int DEFAULT_CURVE_NID = 713;
 
     private final ECPoint generator;
     private final BigInteger order;
