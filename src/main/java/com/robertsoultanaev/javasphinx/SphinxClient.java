@@ -323,7 +323,7 @@ public class SphinxClient {
         Arrays.fill(zeroes, (byte) 0x00);
         byte[] zeroPaddedMessage = concatenate(zeroes, message);
         byte[] body = padBody(params.getBodyLength(), zeroPaddedMessage);
-        byte[] delta = params.pi(nymTuple.ktilde(), body);
+        byte[] delta = params.pi(nymTuple.kTilde(), body);
 
         return new HeaderAndDelta(nymTuple.header(), delta);
     }
