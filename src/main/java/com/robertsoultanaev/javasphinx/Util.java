@@ -7,7 +7,10 @@ import org.bouncycastle.math.ec.ECPoint;
 /**
  * Class to house various utility methods.
  */
-public class Util {
+public final class Util {
+
+    private Util() {
+    }
     /**
      * Concatenate the provided byte arrays into one byte array.
      * @param arrays Array of byte arrays.
