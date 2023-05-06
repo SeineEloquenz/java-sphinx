@@ -27,7 +27,7 @@ build:jdk17:
     - "mvn $MAVEN_CLI_OPTS package"
   artifacts:
     paths:
-      - "*/target/"
+      - "target/"
     expire_in: "30 days"
 
 release:jdk17:
