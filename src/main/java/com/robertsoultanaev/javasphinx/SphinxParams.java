@@ -78,7 +78,7 @@ public class SphinxParams {
         return aesCtr(key, message, iv);
     }
 
-    public byte[] lionessEnc(byte[] key, byte[] message) {
+    public void lionessCheckLengths(byte[] key, byte[] message) throws SphinxException {
         if (key.length != keyLength) {
             throw new SphinxException("Length of provided key (" + key.length + ") did not match the required key length (" + keyLength + ")");
         }
@@ -86,6 +86,10 @@ public class SphinxParams {
         if (message.length < keyLength * 2) {
             throw new SphinxException("Length of provided message (" + message.length + ") needs to be at least double the length of the key (" + keyLength + ")");
         }
+    }
+
+    public byte[] lionessEnc(byte[] key, byte[] message) {
+        lionessCheckLengths(key, message);
 
         // Round 1
         byte[] messageShort = slice(message, keyLength);
@@ -118,13 +122,7 @@ public class SphinxParams {
     }
 
     public byte[] lionessDec(byte[] key, byte[] message) {
-        if (key.length != keyLength) {
-            throw new SphinxException("Length of provided key (" + key.length + ") did not match the required key length (" + keyLength + ")");
-        }
-
-        if (message.length < keyLength * 2) {
-            throw new SphinxException("Length of provided message (" + message.length + ") needs to be at least double the length of the key (" + keyLength + ")");
-        }
+        lionessCheckLengths(key, message);
 
         byte[] r4Short = slice(message, keyLength);
         byte[] r4Long = slice(message, keyLength, message.length);
