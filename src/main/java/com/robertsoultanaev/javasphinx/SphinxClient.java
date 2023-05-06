@@ -271,7 +271,7 @@ public class SphinxClient {
      * @param dest Final destination of the Sphinx packet.
      * @return An identifier for the SURB, key tuple to receive a message addressed to this SURB, and the reply block itself.
      */
-    public Surb createSurb(byte[][] nodelist, ECPoint[] keys, byte[] dest) {
+    public SingleUseReplyBlock createSurb(byte[][] nodelist, ECPoint[] keys, byte[] dest) {
         SecureRandom secureRandom = new SecureRandom();
         int nu = nodelist.length;
 
@@ -309,7 +309,7 @@ public class SphinxClient {
 
         NymTuple nymTuple = new NymTuple(nodelist[0], headerAndSecrets.header(), ktilde);
 
-        return new Surb(xid, keytuple, nymTuple);
+        return new SingleUseReplyBlock(xid, keytuple, nymTuple);
     }
 
     /**

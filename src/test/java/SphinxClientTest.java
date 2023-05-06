@@ -198,7 +198,7 @@ public class SphinxClientTest {
         byte[] surbDest = "myself".getBytes();
         byte[] message = "This is a reply".getBytes();
 
-        Surb surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
+        SingleUseReplyBlock surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
         HeaderAndDelta headerAndDelta = client.packageSurb(surb.nymTuple(), message);
 
         BigInteger x = pkiPriv.get(useNodes[0]).x;
@@ -298,7 +298,7 @@ public class SphinxClientTest {
         byte[] surbDest = "myself".getBytes();
         byte[] message = "This is a reply".getBytes();
 
-        Surb surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
+        SingleUseReplyBlock surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
         HeaderAndDelta headerAndDelta = client.packageSurb(surb.nymTuple(), message);
         headerAndDelta.delta()[0] = 1;
         client.receiveSurb(surb.keytuple(), headerAndDelta.delta());
