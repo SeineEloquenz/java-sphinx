@@ -1,4 +1,6 @@
-package com.robertsoultanaev.javasphinx;
+package com.robertsoultanaev.javasphinx.packet;
+
+import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
 
 /**
  * Type to represent the return value of the mix node processing method

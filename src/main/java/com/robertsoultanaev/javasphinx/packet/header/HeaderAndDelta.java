@@ -1,4 +1,4 @@
-package com.robertsoultanaev.javasphinx;
+package com.robertsoultanaev.javasphinx.packet.header;
 
 /**
  * Type to combine Sphinx header and payload

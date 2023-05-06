@@ -1,5 +1,9 @@
 package com.robertsoultanaev.javasphinx;
 
+import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
+import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
+import com.robertsoultanaev.javasphinx.packet.header.Header;
+import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;

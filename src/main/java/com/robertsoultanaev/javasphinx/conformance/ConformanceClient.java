@@ -1,5 +1,11 @@
-package com.robertsoultanaev.javasphinx;
+package com.robertsoultanaev.javasphinx.conformance;
 
+import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
+import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
+import com.robertsoultanaev.javasphinx.SphinxClient;
+import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
+import com.robertsoultanaev.javasphinx.SphinxParams;
+import com.robertsoultanaev.javasphinx.Util;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Base64;
 

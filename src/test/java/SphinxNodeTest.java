@@ -1,4 +1,7 @@
 import com.robertsoultanaev.javasphinx.*;
+import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
+import com.robertsoultanaev.javasphinx.packet.header.Header;
+import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;

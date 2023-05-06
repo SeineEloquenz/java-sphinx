@@ -1,4 +1,7 @@
-package com.robertsoultanaev.javasphinx;
+package com.robertsoultanaev.javasphinx.packet;
+
+import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
+import com.robertsoultanaev.javasphinx.SphinxParams;
 
 import java.util.Objects;
 

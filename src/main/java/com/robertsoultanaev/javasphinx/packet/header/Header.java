@@ -1,4 +1,4 @@
-package com.robertsoultanaev.javasphinx;
+package com.robertsoultanaev.javasphinx.packet.header;
 
 import org.bouncycastle.math.ec.ECPoint;
 

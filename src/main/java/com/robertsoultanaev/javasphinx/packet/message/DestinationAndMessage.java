@@ -1,4 +1,4 @@
-package com.robertsoultanaev.javasphinx;
+package com.robertsoultanaev.javasphinx.packet.message;
 
 /**
  * Type to combine destination and message

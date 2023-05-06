@@ -1,4 +1,4 @@
-package com.robertsoultanaev.javasphinx;
+package com.robertsoultanaev.javasphinx.packet.reply;
 
 /**
  * Type to combine a reply block and the related information

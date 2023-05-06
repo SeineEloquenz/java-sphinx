@@ -1,5 +1,6 @@
 package com.robertsoultanaev.javasphinx;
 
+import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;

@@ -1,5 +1,6 @@
 package com.robertsoultanaev.javasphinx;
 
+import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.Mac;
 import org.bouncycastle.crypto.digests.SHA256Digest;

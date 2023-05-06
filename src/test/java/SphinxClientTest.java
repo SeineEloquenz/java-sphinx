@@ -1,4 +1,10 @@
 import com.robertsoultanaev.javasphinx.*;
+import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
+import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
+import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
+import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
+import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
+import com.robertsoultanaev.javasphinx.packet.reply.SingleUseReplyBlock;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-import com.robertsoultanaev.javasphinx.ECCGroup;
+import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import com.robertsoultanaev.javasphinx.Util;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
