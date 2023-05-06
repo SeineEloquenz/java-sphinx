@@ -233,7 +233,7 @@ public class SphinxClientTest {
                 assertArrayEquals(surbDest, finalDest);
                 assertArrayEquals(surb.xid(), finalSurbId);
 
-                byte[] received = client.receiveSurb(surb.keytuple(), headerAndDelta.delta());
+                byte[] received = client.receiveSurb(surb.keyTuple(), headerAndDelta.delta());
                 assertArrayEquals(message, received);
 
                 break;
@@ -304,7 +304,7 @@ public class SphinxClientTest {
         SingleUseReplyBlock surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
         HeaderAndDelta headerAndDelta = client.packageSurb(surb.nymTuple(), message);
         headerAndDelta.delta()[0] = 1;
-        client.receiveSurb(surb.keytuple(), headerAndDelta.delta());
+        client.receiveSurb(surb.keyTuple(), headerAndDelta.delta());
     }
 
     @Test(expected = SphinxException.class)
