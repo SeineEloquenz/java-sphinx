@@ -5,9 +5,6 @@ import org.bouncycastle.math.ec.ECPoint;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import static com.robertsoultanaev.javasphinx.Util.slice;
-import static com.robertsoultanaev.javasphinx.Util.concatenate;
-
 /**
  * Class to house the methods used by mix nodes to process Sphinx packets
  */
@@ -39,19 +36,19 @@ public class SphinxNode {
 
         byte[] betaPadZeroes = new byte[2 * params.getBodyLength()];
         Arrays.fill(betaPadZeroes, (byte) 0x00);
-        byte[] betaPad = concatenate(beta, betaPadZeroes);
+        byte[] betaPad = Util.concatenate(beta, betaPadZeroes);
 
         byte[] B = params.xorRho(params.hrho(aesS), betaPad);
 
         byte length = B[0];
-        byte[] routing = slice(B, 1, 1 + length);
-        byte[] rest = slice(B, 1 + length, B.length);
+        byte[] routing = Util.slice(B, 1, 1 + length);
+        byte[] rest = Util.slice(B, 1 + length, B.length);
 
         byte[] tag = params.htau(aesS);
         BigInteger b = params.hb(alpha, aesS);
         alpha = group.expon(alpha, b);
-        gamma = slice(rest, params.getKeyLength());
-        beta = slice(rest, params.getKeyLength(), params.getKeyLength() + (params.getHeaderLength() - 32));
+        gamma = Util.slice(rest, params.getKeyLength());
+        beta = Util.slice(rest, params.getKeyLength(), params.getKeyLength() + (params.getHeaderLength() - 32));
         delta = params.pii(params.hpi(aesS), delta);
 
         byte[] macKey = params.hpi(aesS);

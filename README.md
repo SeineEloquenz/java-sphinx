@@ -49,24 +49,16 @@ SphinxParams params = new SphinxParams();
 Rudimentary Public Key Information is required to encode Sphinx packets. The following snippet generates a mapping from mix node id's to their public & private key entries:
 
 ```java
-class PkiEntry {
-    BigInteger priv;
-    ECPoint pub;
 
-    public PkiEntry(BigInteger priv, ECPoint pub) {
-        this.priv = priv;
-        this.pub = pub;
-    }
-}
-
-HashMap<Integer, PkiEntry> pki = new HashMap<Integer, PkiEntry>();
+SphinxParams params = new SphinxParams();
+PkiGenerator generator = new PkiGenerator(params);
+HashMap<Integer, PkiEntry> pki = new HashMap<>();
 
 for (int i = 0; i < 10; i++) {
     int nodeId = i;
-    BigInteger priv = params.getGroup().genSecret();
-    ECPoint pub = params.getGroup().expon(params.getGroup().getGenerator(), priv);
+    final var pkiEntry = generator.generateKeyPair();
 
-    pki.put(nodeId, new PkiEntry(priv, pub));
+    pki.put(nodeId, pkiEntry);
 }
 ```
 

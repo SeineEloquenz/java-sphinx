@@ -34,6 +34,10 @@ public class SphinxClient {
         this.params = params;
     }
 
+    public SphinxPacket createPacket(HeaderAndDelta headerAndDelta) {
+        return new SphinxPacket(new ParamLengths(params), headerAndDelta);
+    }
+
     /**
      * Encode the mix node id into binary format.
      * @param idnum Identifier of the mix node.

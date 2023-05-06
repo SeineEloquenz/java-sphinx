@@ -52,6 +52,14 @@ public class SphinxParams {
         return group;
     }
 
+    public BigInteger generatePrivateKey() {
+        return group.genSecret();
+    }
+
+    public ECPoint derivePublicKey(BigInteger privateKey) {
+        return group.expon(group.getGenerator(), privateKey);
+    }
+
     public byte[] aesCtr(byte[] key, byte[] message, byte[] iv) {
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), iv);
         SICBlockCipher engine = new SICBlockCipher(new AESEngine());
