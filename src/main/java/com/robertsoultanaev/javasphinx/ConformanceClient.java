@@ -8,6 +8,8 @@ import org.bouncycastle.util.encoders.Base64;
  */
 public class ConformanceClient {
     public static void main(String[] args) throws Exception {
+        final var params = new SphinxParams();
+        final var client = new SphinxClient(params);
         byte[] dest = Base64.decode(args[0]);
         byte[] message = Base64.decode(args[1]);
 
@@ -18,19 +20,17 @@ public class ConformanceClient {
         for (int i = 0; i < numNodes; i++) {
             String[] split = args[2 + i].split(":");
             int nodeId = Integer.parseInt(split[0]);
-            nodesRouting[i] = SphinxClient.encodeNode(nodeId);
+            nodesRouting[i] = client.encodeNode(nodeId);
 
             byte[] encodedKey = Base64.decode(split[1]);
             nodeKeys[i] = Util.decodeECPoint(encodedKey);
         }
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        SphinxParams params = new SphinxParams();
-        HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
         ParamLengths paramLengths = new ParamLengths(params);
         SphinxPacket sphinxPacket = new SphinxPacket(paramLengths, headerAndDelta);
-        byte[] binMessage = SphinxClient.packMessage(sphinxPacket);
+        byte[] binMessage = client.packMessage(sphinxPacket);
 
         System.out.write(binMessage);
     }

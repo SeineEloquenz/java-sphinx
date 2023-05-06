@@ -16,6 +16,7 @@ public class SphinxClientTest {
     }
 
     private SphinxParams params;
+    private SphinxClient client;
     private HashMap<Integer, PkiEntry> pkiPriv;
     private byte[][] nodesRouting;
     private ECPoint[] nodeKeys;
@@ -24,6 +25,7 @@ public class SphinxClientTest {
     @Before
     public void setUp() {
         params = new SphinxParams();
+        client = new SphinxClient(params);
 
         int r = 5;
 
@@ -46,11 +48,11 @@ public class SphinxClientTest {
         for (int i = 0; i < nodePool.length; i++) {
             nodePool[i] = (Integer) pubKeys[i];
         }
-        useNodes = SphinxClient.randSubset(nodePool, r);
+        useNodes = client.randSubset(nodePool, r);
 
         nodesRouting = new byte[useNodes.length][];
         for (int i = 0; i < useNodes.length; i++) {
-            nodesRouting[i] = SphinxClient.encodeNode(useNodes[i]);
+            nodesRouting[i] = client.encodeNode(useNodes[i]);
         }
 
         nodeKeys = new ECPoint[useNodes.length];
@@ -66,14 +68,14 @@ public class SphinxClientTest {
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
         ParamLengths paramLengths = new ParamLengths(params.getHeaderLength(), params.getBodyLength());
 
         SphinxPacket sphinxPacket = new SphinxPacket(paramLengths, headerAndDelta);
 
-        byte[] binMessage = SphinxClient.packMessage(sphinxPacket);
-        SphinxPacket unpackedSphinxPacket = SphinxClient.unpackMessage(binMessage);
+        byte[] binMessage = client.packMessage(sphinxPacket);
+        SphinxPacket unpackedSphinxPacket = client.unpackMessage(binMessage);
         ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths();
         HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta();
 
@@ -89,19 +91,19 @@ public class SphinxClientTest {
     @Test
     public void encodeAndDecodeMaxMessageLength() {
         byte[] dest = "bob".getBytes();
-        byte[] message = new byte[SphinxClient.getMaxPayloadSize(params) - dest.length];
+        byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
         Arrays.fill(message, (byte) 0xaa);
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
         ParamLengths paramLengths = new ParamLengths(params.getHeaderLength(), params.getBodyLength());
 
         SphinxPacket sphinxPacket = new SphinxPacket(paramLengths, headerAndDelta);
 
-        byte[] binMessage = SphinxClient.packMessage(sphinxPacket);
-        SphinxPacket unpackedSphinxPacket = SphinxClient.unpackMessage(binMessage);
+        byte[] binMessage = client.packMessage(sphinxPacket);
+        SphinxPacket unpackedSphinxPacket = client.unpackMessage(binMessage);
         ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths();
         HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta();
 
@@ -121,7 +123,7 @@ public class SphinxClientTest {
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
         BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
 
@@ -131,12 +133,12 @@ public class SphinxClientTest {
     @Test
     public void routeSphinxMessageMaxMessageLength() throws Exception {
         byte[] dest = "bob".getBytes();
-        byte[] message = new byte[SphinxClient.getMaxPayloadSize(params) - dest.length];
+        byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
         Arrays.fill(message, (byte) 0xaa);
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
         BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
 
@@ -146,14 +148,15 @@ public class SphinxClientTest {
     @Test
     public void routeSphinxMessageNonDefaultBodySize() throws Exception {
         SphinxParams params = new SphinxParams(16, 4096, 192, new ECCGroup());
+        SphinxClient client = new SphinxClient(params);
 
         byte[] dest = "bob".getBytes();
-        byte[] message = new byte[SphinxClient.getMaxPayloadSize(params) - dest.length];
+        byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
         Arrays.fill(message, (byte) 0xaa);
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
         BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
 
@@ -186,7 +189,7 @@ public class SphinxClientTest {
 
                 assertEquals(1, routingLen);
 
-                DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey(), ret.headerAndDelta().delta());
+                DestinationAndMessage destAndMsg = client.receiveForward(ret.macKey(), ret.headerAndDelta().delta());
 
                 assertArrayEquals(dest, destAndMsg.destination());
                 assertArrayEquals(message, destAndMsg.message());
@@ -201,8 +204,8 @@ public class SphinxClientTest {
         byte[] surbDest = "myself".getBytes();
         byte[] message = "This is a reply".getBytes();
 
-        Surb surb = SphinxClient.createSurb(params, nodesRouting, nodeKeys, surbDest);
-        HeaderAndDelta headerAndDelta = SphinxClient.packageSurb(params, surb.nymTuple(), message);
+        Surb surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
+        HeaderAndDelta headerAndDelta = client.packageSurb(surb.nymTuple(), message);
 
         BigInteger x = pkiPriv.get(useNodes[0]).x;
         MessageUnpacker unpacker;
@@ -234,7 +237,7 @@ public class SphinxClientTest {
                 assertArrayEquals(surbDest, finalDest);
                 assertArrayEquals(surb.xid(), finalSurbId);
 
-                byte[] received = SphinxClient.receiveSurb(params, surb.keytuple(), headerAndDelta.delta());
+                byte[] received = client.receiveSurb(surb.keytuple(), headerAndDelta.delta());
                 assertArrayEquals(message, received);
 
                 break;
@@ -245,7 +248,7 @@ public class SphinxClientTest {
     @Test(expected = SphinxException.class)
     public void randSubsetBadNu() {
         int[] nodePool = {0,0,0,0,0};
-        SphinxClient.randSubset(nodePool, nodePool.length + 1);
+        client.randSubset(nodePool, nodePool.length + 1);
     }
 
     @Test(expected = SphinxException.class)
@@ -255,7 +258,7 @@ public class SphinxClientTest {
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
         BigInteger x = pkiPriv.get(useNodes[0]).x;
 
@@ -286,7 +289,7 @@ public class SphinxClientTest {
                 // Corrupt payload
                 ret.headerAndDelta().delta()[20]++;
 
-                DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey(), ret.headerAndDelta().delta());
+                DestinationAndMessage destAndMsg = client.receiveForward(ret.macKey(), ret.headerAndDelta().delta());
 
                 assertArrayEquals(dest, destAndMsg.destination());
                 assertArrayEquals(message, destAndMsg.message());
@@ -301,10 +304,10 @@ public class SphinxClientTest {
         byte[] surbDest = "myself".getBytes();
         byte[] message = "This is a reply".getBytes();
 
-        Surb surb = SphinxClient.createSurb(params, nodesRouting, nodeKeys, surbDest);
-        HeaderAndDelta headerAndDelta = SphinxClient.packageSurb(params, surb.nymTuple(), message);
+        Surb surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
+        HeaderAndDelta headerAndDelta = client.packageSurb(surb.nymTuple(), message);
         headerAndDelta.delta()[0] = 1;
-        SphinxClient.receiveSurb(params, surb.keytuple(), headerAndDelta.delta());
+        client.receiveSurb(surb.keytuple(), headerAndDelta.delta());
     }
 
     @Test(expected = SphinxException.class)
@@ -314,16 +317,16 @@ public class SphinxClientTest {
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
     }
 
     @Test(expected = SphinxException.class)
     public void createForwardDestAndMessageTooLong() {
         byte[] dest = "bob".getBytes();
-        byte[] message = new byte[(SphinxClient.getMaxPayloadSize(params) - dest.length) + 1];
+        byte[] message = new byte[(client.getMaxPayloadSize() - dest.length) + 1];
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
 
-        SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+        client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
     }
 }
