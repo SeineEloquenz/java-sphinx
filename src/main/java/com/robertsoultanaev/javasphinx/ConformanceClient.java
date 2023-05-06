@@ -28,8 +28,7 @@ public class ConformanceClient {
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
         HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
-        ParamLengths paramLengths = new ParamLengths(params);
-        SphinxPacket sphinxPacket = new SphinxPacket(paramLengths, headerAndDelta);
+        SphinxPacket sphinxPacket = new SphinxPacket(params, headerAndDelta);
         byte[] binMessage = client.packMessage(sphinxPacket);
 
         System.out.write(binMessage);

@@ -35,7 +35,7 @@ public class SphinxClient {
     }
 
     public SphinxPacket createPacket(HeaderAndDelta headerAndDelta) {
-        return new SphinxPacket(new ParamLengths(params), headerAndDelta);
+        return new SphinxPacket(params, headerAndDelta);
     }
 
     /**
@@ -396,8 +396,8 @@ public class SphinxClient {
     public byte[] packMessage(SphinxPacket sphinxPacket) {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
-        int headerLength = sphinxPacket.paramLengths().headerLength();
-        int bodyLength = sphinxPacket.paramLengths().bodyLength();
+        int headerLength = sphinxPacket.headerLength();
+        int bodyLength = sphinxPacket.bodyLength();
 
         Header header = sphinxPacket.headerAndDelta().header();
         byte[] delta = sphinxPacket.headerAndDelta().delta();
@@ -469,12 +469,11 @@ public class SphinxClient {
 
         ECPoint alpha = Util.decodeECPoint(encodedAlpha);
 
-        ParamLengths paramLengths = new ParamLengths(headerLength, bodyLength);
         Header header = new Header(alpha, beta, gamma);
 
         HeaderAndDelta headerAndDelta = new HeaderAndDelta(header, delta);
 
-        return new SphinxPacket(paramLengths, headerAndDelta);
+        return new SphinxPacket(params, headerAndDelta);
     }
 
     /**

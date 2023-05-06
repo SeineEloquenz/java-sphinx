@@ -70,17 +70,14 @@ public class SphinxClientTest {
 
         HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
-        ParamLengths paramLengths = new ParamLengths(params.getHeaderLength(), params.getBodyLength());
-
-        SphinxPacket sphinxPacket = new SphinxPacket(paramLengths, headerAndDelta);
+        SphinxPacket sphinxPacket = new SphinxPacket(params, headerAndDelta);
 
         byte[] binMessage = client.packMessage(sphinxPacket);
         SphinxPacket unpackedSphinxPacket = client.unpackMessage(binMessage);
-        ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths();
         HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta();
 
-        assertEquals(params.getHeaderLength(), unpackedParamLengths.headerLength());
-        assertEquals(params.getBodyLength(), unpackedParamLengths.bodyLength());
+        assertEquals(params.getHeaderLength(), unpackedSphinxPacket.headerLength());
+        assertEquals(params.getBodyLength(), unpackedSphinxPacket.bodyLength());
 
         assertEquals(headerAndDelta.header().alpha(), unpackedHeaderAndDelta.header().alpha());
         assertArrayEquals(headerAndDelta.header().beta(), unpackedHeaderAndDelta.header().beta());
@@ -98,17 +95,14 @@ public class SphinxClientTest {
 
         HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
 
-        ParamLengths paramLengths = new ParamLengths(params.getHeaderLength(), params.getBodyLength());
-
-        SphinxPacket sphinxPacket = new SphinxPacket(paramLengths, headerAndDelta);
+        SphinxPacket sphinxPacket = new SphinxPacket(params, headerAndDelta);
 
         byte[] binMessage = client.packMessage(sphinxPacket);
         SphinxPacket unpackedSphinxPacket = client.unpackMessage(binMessage);
-        ParamLengths unpackedParamLengths = unpackedSphinxPacket.paramLengths();
         HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta();
 
-        assertEquals(params.getHeaderLength(), unpackedParamLengths.headerLength());
-        assertEquals(params.getBodyLength(), unpackedParamLengths.bodyLength());
+        assertEquals(params.getHeaderLength(), unpackedSphinxPacket.headerLength());
+        assertEquals(params.getBodyLength(), unpackedSphinxPacket.bodyLength());
 
         assertEquals(headerAndDelta.header().alpha(), unpackedHeaderAndDelta.header().alpha());
         assertArrayEquals(headerAndDelta.header().beta(), unpackedHeaderAndDelta.header().beta());
