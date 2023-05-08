@@ -3,8 +3,8 @@ package com.robertsoultanaev.javasphinx;
 import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.Header;
-import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
 import com.robertsoultanaev.javasphinx.packet.header.HeaderAndSecrets;
+import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
 import com.robertsoultanaev.javasphinx.packet.reply.NymTuple;
 import com.robertsoultanaev.javasphinx.packet.reply.SingleUseReplyBlock;
@@ -16,7 +16,6 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 import java.math.BigInteger;
-
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +41,8 @@ public class SphinxClient {
         this.params = params;
     }
 
-    public SphinxPacket createPacket(HeaderAndDelta headerAndDelta) {
-        return new SphinxPacket(params, headerAndDelta);
+    public SphinxPacket createPacket(PacketContent packetContent) {
+        return new SphinxPacket(params, packetContent);
     }
 
     public SphinxParams params() {
@@ -226,7 +225,7 @@ public class SphinxClient {
      * @param destinationAndMessage Final destination and the data payload of the Sphinx packet.
      * @return Header and payload of a Sphinx packet encrypted in a nested manner.
      */
-    public HeaderAndDelta createForwardMessage(byte[][] nodelist, ECPoint[] keys, DestinationAndMessage destinationAndMessage) {
+    public PacketContent createForwardMessage(byte[][] nodelist, ECPoint[] keys, DestinationAndMessage destinationAndMessage) {
         byte[] dest = destinationAndMessage.destination();
         byte[] message = destinationAndMessage.message();
 
@@ -273,7 +272,7 @@ public class SphinxClient {
             delta = params.pi(params.hpi(secrets[i]), delta);
         }
 
-        return new HeaderAndDelta(headerAndSecrets.header(), delta);
+        return new PacketContent(headerAndSecrets.header(), delta);
     }
 
     /**
@@ -330,14 +329,14 @@ public class SphinxClient {
      * @param message The data payload of the Sphinx packet.
      * @return Header and payload of a Sphinx packet encrypted in a nested manner.
      */
-    public HeaderAndDelta packageSurb(NymTuple nymTuple, byte[] message) {
+    public PacketContent packageSurb(NymTuple nymTuple, byte[] message) {
         byte[] zeroes = new byte[params.keyLength()];
         Arrays.fill(zeroes, (byte) 0x00);
         byte[] zeroPaddedMessage = concatenate(zeroes, message);
         byte[] body = padBody(params.bodyLength(), zeroPaddedMessage);
         byte[] delta = params.pi(nymTuple.kTilde(), body);
 
-        return new HeaderAndDelta(nymTuple.header(), delta);
+        return new PacketContent(nymTuple.header(), delta);
     }
 
     /**
@@ -411,8 +410,8 @@ public class SphinxClient {
         int headerLength = sphinxPacket.headerLength();
         int bodyLength = sphinxPacket.bodyLength();
 
-        Header header = sphinxPacket.headerAndDelta().header();
-        byte[] delta = sphinxPacket.headerAndDelta().delta();
+        Header header = sphinxPacket.packetContent().header();
+        byte[] delta = sphinxPacket.packetContent().delta();
         byte[] packedEcPoint = packECPoint(header.alpha());
 
         try {
@@ -483,9 +482,9 @@ public class SphinxClient {
 
         Header header = new Header(alpha, beta, gamma);
 
-        HeaderAndDelta headerAndDelta = new HeaderAndDelta(header, delta);
+        PacketContent packetContent = new PacketContent(header, delta);
 
-        return new SphinxPacket(params, headerAndDelta);
+        return new SphinxPacket(params, packetContent);
     }
 
     /**

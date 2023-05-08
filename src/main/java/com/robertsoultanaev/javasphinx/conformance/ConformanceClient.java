@@ -1,11 +1,11 @@
 package com.robertsoultanaev.javasphinx.conformance;
 
-import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
-import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
 import com.robertsoultanaev.javasphinx.SphinxClient;
-import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.SphinxParams;
 import com.robertsoultanaev.javasphinx.Util;
+import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
+import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
+import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Base64;
 
@@ -33,8 +33,8 @@ public class ConformanceClient {
         }
 
         DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-        HeaderAndDelta headerAndDelta = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
-        SphinxPacket sphinxPacket = new SphinxPacket(params, headerAndDelta);
+        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        SphinxPacket sphinxPacket = new SphinxPacket(params, packetContent);
         byte[] binMessage = client.packMessage(sphinxPacket);
 
         System.out.write(binMessage);

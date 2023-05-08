@@ -1,7 +1,7 @@
 package com.robertsoultanaev.javasphinx.packet;
 
-import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
 import com.robertsoultanaev.javasphinx.SphinxParams;
+import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 
 import java.util.Objects;
 
@@ -11,15 +11,15 @@ import java.util.Objects;
 public final class SphinxPacket {
     private final int headerLength;
     private final int bodyLength;
-    private final HeaderAndDelta headerAndDelta;
+    private final PacketContent packetContent;
 
     /**
      *
      */
-    public SphinxPacket(SphinxParams params, HeaderAndDelta headerAndDelta) {
+    public SphinxPacket(SphinxParams params, PacketContent packetContent) {
         this.headerLength = params.headerLength();
         this.bodyLength = params.bodyLength();
-        this.headerAndDelta = headerAndDelta;
+        this.packetContent = packetContent;
     }
 
     public int headerLength() {
@@ -30,8 +30,8 @@ public final class SphinxPacket {
         return bodyLength;
     }
 
-    public HeaderAndDelta headerAndDelta() {
-        return headerAndDelta;
+    public PacketContent packetContent() {
+        return packetContent;
     }
 
     @Override
@@ -40,12 +40,12 @@ public final class SphinxPacket {
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (SphinxPacket) obj;
         return this.headerLength == that.headerLength && this.bodyLength == that.bodyLength &&
-                Objects.equals(this.headerAndDelta, that.headerAndDelta);
+                Objects.equals(this.packetContent, that.packetContent);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(headerLength, bodyLength, headerAndDelta);
+        return Objects.hash(headerLength, bodyLength, packetContent);
     }
 
     @Override
@@ -53,7 +53,7 @@ public final class SphinxPacket {
         return "SphinxPacket[" +
                 "headerLength=" + headerLength + ", " +
                 "bodyLength=" + bodyLength + ", " +
-                "headerAndDelta=" + headerAndDelta + ']';
+                "packetContent=" + packetContent + ']';
     }
 
 }

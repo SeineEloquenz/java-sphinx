@@ -3,7 +3,7 @@ package com.robertsoultanaev.javasphinx;
 import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
 import com.robertsoultanaev.javasphinx.packet.header.Header;
-import com.robertsoultanaev.javasphinx.packet.header.HeaderAndDelta;
+import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
@@ -23,15 +23,15 @@ public class SphinxNode {
     /**
      * Method that processes Sphinx packets at a mix node
      * @param secret Mix node's private key
-     * @param headerAndDelta Header and encrypted payload of the Sphinx packet
+     * @param packetContent Header and encrypted payload of the Sphinx packet
      * @return The new header and payload of the Sphinx packet along with some auxiliary information
      */
-    public ProcessedPacket sphinxProcess(BigInteger secret, HeaderAndDelta headerAndDelta) {
+    public ProcessedPacket sphinxProcess(BigInteger secret, PacketContent packetContent) {
         ECCGroup group = params.getGroup();
-        ECPoint alpha = headerAndDelta.header().alpha();
-        byte[] beta = headerAndDelta.header().beta();
-        byte[] gamma = headerAndDelta.header().gamma();
-        byte[] delta = headerAndDelta.delta();
+        ECPoint alpha = packetContent.header().alpha();
+        byte[] beta = packetContent.header().beta();
+        byte[] gamma = packetContent.header().gamma();
+        byte[] delta = packetContent.delta();
 
         ECPoint s = group.expon(alpha, secret);
         byte[] aesS = params.getAesKey(s);
@@ -65,8 +65,8 @@ public class SphinxNode {
 
         Header header = new Header(alpha, beta, gamma);
 
-        HeaderAndDelta headerAndDelta1 = new HeaderAndDelta(header, delta);
+        PacketContent packetContent1 = new PacketContent(header, delta);
 
-        return new ProcessedPacket(tag, routing, headerAndDelta1, macKey);
+        return new ProcessedPacket(tag, routing, packetContent1, macKey);
     }
 }

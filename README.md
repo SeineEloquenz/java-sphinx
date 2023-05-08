@@ -92,9 +92,9 @@ byte[] dest = "bob".getBytes();
 byte[] message = "this is a test".getBytes();
 
 DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-HeaderAndDelta headerAndDelta = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
+PacketContent packetContent = SphinxClient.createForwardMessage(params, nodesRouting, nodeKeys, destinationAndMessage);
 
-SphinxPacket sphinxPacket = new SphinxPacket(params, headerAndDelta);
+SphinxPacket sphinxPacket = new SphinxPacket(params, packetContent);
 byte[] binMessage = SphinxClient.packMessage(sphinxPacket);
 ```
 
@@ -111,7 +111,7 @@ Before processing the message, the mix needs to unpack the message from binary f
 
 ```java
 SphinxPacket unpackedSphinxPacket = SphinxClient.unpackMessage(binMessage);
-HeaderAndDelta unpackedHeaderAndDelta = unpackedSphinxPacket.headerAndDelta;
+PacketContent unpackedPacketContent = unpackedSphinxPacket.packetContent;
 ```
 
 The header and delta of the packet are the processed as follows (some sections are commented as they depend on the specific implementation of a node):
@@ -122,8 +122,8 @@ MessageUnpacker unpacker;
 
 BigInteger currentNodeKey = /* The private key of the mix node */;
 
-ProcessedPacket ret = SphinxNode.sphinxProcess(params, currentNodeKey, unpackedHeaderAndDelta);
-headerAndDelta = ret.headerAndDelta;
+ProcessedPacket ret = SphinxNode.sphinxProcess(params, currentNodeKey, unpackedPacketContent);
+packetContent = ret.packetContent;
 
 byte[] encodedRouting = ret.routing;
 
@@ -139,7 +139,7 @@ if (flag.equals(SphinxClient.RELAY_FLAG)) {
 } else if (flag.equals(SphinxClient.DEST_FLAG)) {
     unpacker.close();
 
-    DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey, ret.headerAndDelta.delta);
+    DestinationAndMessage destAndMsg = SphinxClient.receiveForward(params, ret.macKey, ret.packetContent.delta);
     
     byte[] finalDestination = destAndMsg.destination;
     byte[] finalMessage = destAndMsg.message;
@@ -161,7 +161,7 @@ The `Surb` type contains three fields - `xid` is the identifier of this SURB, `k
 
 ```java
 byte[] message = "This is a reply".getBytes();
-HeaderAndDelta headerAndDelta = SphinxClient.packageSurb(params, surb.nymTuple, message);
+PacketContent packetContent = SphinxClient.packageSurb(params, surb.nymTuple, message);
 ```
 
 The header and delta are routed through the mix network like forward messages, except for the final mix:
@@ -175,14 +175,14 @@ The header and delta are routed through the mix network like forward messages, e
     byte[] finalSurbId = unpacker.readPayload(surbIdLength);
     unpacker.close();
     
-    /* Relay finalSurbId and headerAndDelta.delta to finalDest */
+    /* Relay finalSurbId and packetContent.delta to finalDest */
 }
 ```
 
 Finally at the recipient of the reply, `finalSurbId` is used to find the corresponding `keytuple` to receive the reply:
 
 ```java
-byte[] received = SphinxClient.receiveSurb(params, surb.keytuple, headerAndDelta.delta);
+byte[] received = SphinxClient.receiveSurb(params, surb.keytuple, packetContent.delta);
 ```
 
 ## Conformance testing
