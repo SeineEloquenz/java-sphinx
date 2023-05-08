@@ -36,15 +36,15 @@ public class SphinxNode {
         ECPoint s = group.expon(alpha, secret);
         byte[] aesS = params.getAesKey(s);
 
-        if (beta.length != (params.getHeaderLength() - 32)) {
-            throw new SphinxException("Length of beta (" + beta.length + ") did not match expected length (" + (params.getHeaderLength() - 32) + ")");
+        if (beta.length != (params.headerLength() - 32)) {
+            throw new SphinxException("Length of beta (" + beta.length + ") did not match expected length (" + (params.headerLength() - 32) + ")");
         }
 
         if (!Arrays.equals(gamma, params.mu(params.hmu(aesS), beta))) {
             throw new SphinxException("MAC mismatch");
         }
 
-        byte[] betaPadZeroes = new byte[2 * params.getBodyLength()];
+        byte[] betaPadZeroes = new byte[2 * params.bodyLength()];
         Arrays.fill(betaPadZeroes, (byte) 0x00);
         byte[] betaPad = Util.concatenate(beta, betaPadZeroes);
 
@@ -57,8 +57,8 @@ public class SphinxNode {
         byte[] tag = params.htau(aesS);
         BigInteger b = params.hb(alpha, aesS);
         alpha = group.expon(alpha, b);
-        gamma = Util.slice(rest, params.getKeyLength());
-        beta = Util.slice(rest, params.getKeyLength(), params.getKeyLength() + (params.getHeaderLength() - 32));
+        gamma = Util.slice(rest, params.keyLength());
+        beta = Util.slice(rest, params.keyLength(), params.keyLength() + (params.headerLength() - 32));
         delta = params.pii(params.hpi(aesS), delta);
 
         byte[] macKey = params.hpi(aesS);

@@ -17,8 +17,8 @@ public final class SphinxPacket {
      *
      */
     public SphinxPacket(SphinxParams params, HeaderAndDelta headerAndDelta) {
-        this.headerLength = params.getHeaderLength();
-        this.bodyLength = params.getBodyLength();
+        this.headerLength = params.headerLength();
+        this.bodyLength = params.bodyLength();
         this.headerAndDelta = headerAndDelta;
     }
 

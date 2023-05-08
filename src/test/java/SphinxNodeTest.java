@@ -100,7 +100,7 @@ public class SphinxNodeTest {
 
         final var badParams = new SphinxParams() {
             @Override
-            public int getHeaderLength() {
+            public int headerLength() {
                 return 0;
             }
         };

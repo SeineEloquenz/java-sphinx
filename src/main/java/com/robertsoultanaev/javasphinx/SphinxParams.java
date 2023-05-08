@@ -37,16 +37,20 @@ public class SphinxParams {
         this(16, 1024, 192, new ECCGroup());
     }
 
-    public int getKeyLength() {
+    public int keyLength() {
         return keyLength;
     }
 
-    public int getBodyLength() {
+    public int bodyLength() {
         return bodyLength;
     }
 
-    public int getHeaderLength() {
+    public int headerLength() {
         return headerLength;
+    }
+
+    public int packetLength() {
+        return headerLength + bodyLength;
     }
 
     public ECCGroup getGroup() {
