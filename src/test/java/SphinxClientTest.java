@@ -167,12 +167,12 @@ public class SphinxClientTest {
     }
 
     private void testRouting(SphinxParams params, PacketContent packetContent, BigInteger firstNodeKey, byte[] dest, byte[] message) throws Exception {
-        final var node = new SphinxNode(params);
         BigInteger currentNodeKey = firstNodeKey;
         MessageUnpacker unpacker;
 
         while (true) {
-            ProcessedPacket ret = node.sphinxProcess(currentNodeKey, packetContent);
+            final var node = new SphinxNode(params, currentNodeKey);
+            ProcessedPacket ret = node.sphinxProcess(packetContent);
             packetContent = ret.packetContent();
 
             byte[] encodedRouting = ret.routing();
@@ -205,7 +205,6 @@ public class SphinxClientTest {
 
     @Test
     public void routeSurb() throws Exception {
-        final var node = new SphinxNode(params);
         byte[] surbDest = "myself".getBytes();
         byte[] message = "This is a reply".getBytes();
 
@@ -216,7 +215,8 @@ public class SphinxClientTest {
         MessageUnpacker unpacker;
 
         while (true) {
-            ProcessedPacket ret = node.sphinxProcess(x, packetContent);
+            final var node = new SphinxNode(params, x);
+            ProcessedPacket ret = node.sphinxProcess(packetContent);
             packetContent = ret.packetContent();
 
             byte[] encodedRouting = ret.routing();
@@ -258,7 +258,6 @@ public class SphinxClientTest {
 
     @Test(expected = SphinxException.class)
     public void receiveForwardCorruptedPayload() throws Exception {
-        final var node = new SphinxNode(params);
         byte[] dest = "bob".getBytes();
         byte[] message = "this is a test".getBytes();
 
@@ -271,7 +270,8 @@ public class SphinxClientTest {
         MessageUnpacker unpacker;
 
         while (true) {
-            ProcessedPacket ret = node.sphinxProcess(x, packetContent);
+            final var node = new SphinxNode(params, x);
+            ProcessedPacket ret = node.sphinxProcess(packetContent);
             packetContent = ret.packetContent();
 
             byte[] encodedRouting = ret.routing();

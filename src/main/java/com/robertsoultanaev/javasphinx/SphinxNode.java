@@ -15,18 +15,19 @@ import java.util.Arrays;
 public class SphinxNode {
 
     private final SphinxParams params;
+    private final BigInteger secret;
 
-    public SphinxNode(final SphinxParams params) {
+    public SphinxNode(final SphinxParams params, final BigInteger secret) {
         this.params = params;
+        this.secret = secret;
     }
 
     /**
      * Method that processes Sphinx packets at a mix node
-     * @param secret Mix node's private key
      * @param packetContent Header and encrypted payload of the Sphinx packet
      * @return The new header and payload of the Sphinx packet along with some auxiliary information
      */
-    public ProcessedPacket sphinxProcess(BigInteger secret, PacketContent packetContent) {
+    public ProcessedPacket sphinxProcess(PacketContent packetContent) {
         ECCGroup group = params.getGroup();
         ECPoint alpha = packetContent.header().alpha();
         byte[] beta = packetContent.header().beta();

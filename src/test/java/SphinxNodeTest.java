@@ -17,9 +17,8 @@ import static org.junit.Assert.assertEquals;
 public class SphinxNodeTest {
     @Test
     public void processSphinxPacket() {
-        final var node = new SphinxNode(new SphinxParams());
-
-        BigInteger secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
+        final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
+        final var node = new SphinxNode(new SphinxParams(), secret);
 
         byte[] encodedEcPoint = Hex.decode("0360071b99894f0e9fe6ebc9f5a4ca1763b2aaf965278ea3aa90758a42");
         ECPoint inputAlpha = Util.decodeECPoint(encodedEcPoint);
@@ -46,7 +45,7 @@ public class SphinxNodeTest {
 
         byte[] expectedDelta = Hex.decode("fd6ca6dfae13d4dc32af0e964ac54147b0ad27aa6830d5a93138b10a7aa7b4425205a0063a808e195cc98b1783ce9c85b30648dad1f70ec6c66433af65d61ca9829f0f70d3a728f37256d021c7617ea2af52433e569e80b89581865db2d993d3e2d1df2d900808bca5f396a09b7f4100085220b63989a587216cfeabb1a6a48f2789781fc573f881c6032934e371c5c84a0e2c020f4926c7de8a79a644015705a8a610ba584df1f0e4247bcdb00b9555210555c814c663184134aaa55d82b380c97b5721cca28fff887986ed3a27dcbece6ca9dd93fef94362bc619fef656c161fa2a4bbf5301f60d96834e3efaf50e766606755606af90220826b89dfab3a788485887173999022850f4d30ff6d6d15ddbef71e80200bdfaf180ccd5a584688b03ffd1fda22613ff95c20de4b23ef63bed082499768bee96fe68d52ef957309192e52e04fd2f8b6e637a29c22aa326cc9cadcd3a071e4c69ff4db5cfe8569214a6285b8ca4f75d4c6909f1776fe3467a3bc6542103e5d4a8f20cdde218448ca077449397bbb311707996b4045af0879c951af7033a77837dcd88cc11f0093f402a6e3011cd2af5d162242a196ac7e5720f050bd92bf3b2637a4df3003e6984b4faf643776194cb6fd2c6d9f67c4e4b34ef92a192f79c9b9027d61c359d732a10b886f23a6a69885fd04be633975fc45826a761abac530e989b9d4a10ddef4cdbf07b554ce2c99d7905e1cf20d74ac1e344af9b63dfd9411d9430b708d58531665b38393c950df90c855a703a78bbcaa68d5b31034e5046add6136977a5c0ed403690a25b951c1f347a50b84b24c0234ad782cf00efc8001deb6e78e27528ced16cca7239f41b4e9f78478804421337945b6fec8697860607b021abfdb319e81c36b9d2b490d6cc719cf796fa18c4b07350e9323d72c52d611445cfebc66e791b07ff9d125277e60ddf0fbaec9d81fade646d70fe6acef1f555aa3ec2f95291cd9049d7ed82adafdbb04da097f5eee6e06c67d8a4d6dd8b9b12904f638e441dd1ae7e183f08475481857a88a88eb0f9908be932e10623c9b71725498358c8d9430afe59cdf88652e4c33388ba7ab41ac220c67f1e33d02d0f8e34bf9644c6f60bb6f1e67f3c96d1df8f4aaaedfcb099a7550b92aefb232a7154ff81e5a1377c50d41cd3e96a734596ba166286a73814fe23fe8ab52237e98b98b1cd1f0d3ab075fa4b9fd1f5bfb23adc71e6ce1d1e10cf2142af731153293849ab7558c26aa56bc7cf430be4e763a09fa27bb9e867141d8de73d9d225ae69a266e3d0ce309a96fe2214e478af06701f2afc8aab4914af56ce84466083d05ba742eb6de17d064fcc048ef4071a4a8bac0e00b4246adc8732ebfd8c8338e9cbd3791cacf4c22952fcff9f82a300538ac86a5ed638b10f55607222143c80504bde1e32c051ea99ff");
 
-        ProcessedPacket output = node.sphinxProcess(secret, inputPacketContent);
+        ProcessedPacket output = node.sphinxProcess(inputPacketContent);
         byte[] outputTag = output.tag();
         byte[] outputRouting = output.routing();
         PacketContent outputPacketContent = output.packetContent();
@@ -63,9 +62,8 @@ public class SphinxNodeTest {
 
     @Test(expected = SphinxException.class)
     public void processSphinxPacketBadMac() {
-        final var node = new SphinxNode(new SphinxParams());
-
-        BigInteger secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
+        final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
+        final var node = new SphinxNode(new SphinxParams(), secret);
 
         byte[] encodedEcPoint = Hex.decode("0360071b99894f0e9fe6ebc9f5a4ca1763b2aaf965278ea3aa90758a42");
         ECPoint inputAlpha = Util.decodeECPoint(encodedEcPoint);
@@ -80,14 +78,14 @@ public class SphinxNodeTest {
 
         PacketContent inputPacketContent = new PacketContent(inputHeader, inputDelta);
 
-        node.sphinxProcess(secret, inputPacketContent);
+        node.sphinxProcess(inputPacketContent);
     }
 
 
 
     @Test(expected = SphinxException.class)
     public void processSphinxPacketBadBetaLength() {
-        BigInteger secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
+        final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
 
         byte[] encodedEcPoint = Hex.decode("0360071b99894f0e9fe6ebc9f5a4ca1763b2aaf965278ea3aa90758a42");
         ECPoint inputAlpha = Util.decodeECPoint(encodedEcPoint);
@@ -108,8 +106,8 @@ public class SphinxNodeTest {
                 return 0;
             }
         };
-        final var node = new SphinxNode(badParams);
+        final var node = new SphinxNode(badParams, secret);
 
-        node.sphinxProcess(secret, inputPacketContent);
+        node.sphinxProcess(inputPacketContent);
     }
 }
