@@ -1,4 +1,4 @@
-package com.robertsoultanaev.javasphinx.mix;
+package com.robertsoultanaev.javasphinx.routing;
 
 import java.util.HashMap;
 import java.util.Map;

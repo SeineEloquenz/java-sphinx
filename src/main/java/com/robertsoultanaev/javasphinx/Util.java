@@ -5,6 +5,8 @@ import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 
+import java.nio.ByteBuffer;
+
 /**
  * Class to house various utility methods.
  */
@@ -42,6 +44,17 @@ public final class Util {
     public static ECPoint decodeECPoint(byte[] encodedECPoint) {
         ECCurve ecCurve = ECNamedCurveTable.getParameterSpec(ECCGroup.DEFAULT_CURVE_NAME).getCurve();
         return ecCurve.decodePoint(encodedECPoint);
+    }
+
+    public static byte[] encodeInt(int value) {
+        ByteBuffer b = ByteBuffer.allocate(4);
+        b.putInt(value);
+        return b.array();
+    }
+
+    public static int decodeInt(byte[] array) {
+        ByteBuffer b = ByteBuffer.wrap(array);
+        return b.getInt();
     }
 
     /**
