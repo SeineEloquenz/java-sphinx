@@ -74,10 +74,7 @@ public class SphinxClientTest {
     public void encodeAndDecode() {
         byte[] dest = "bob".getBytes();
         byte[] message = "this is a test".getBytes();
-
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
         SphinxPacket sphinxPacket = new SphinxPacket(params, packetContent);
 
@@ -100,9 +97,7 @@ public class SphinxClientTest {
         byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
         Arrays.fill(message, (byte) 0xaa);
 
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
         SphinxPacket sphinxPacket = new SphinxPacket(params, packetContent);
 
@@ -124,9 +119,7 @@ public class SphinxClientTest {
         byte[] dest = "bob".getBytes();
         byte[] message = "this is a test".getBytes();
 
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
         BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
 
@@ -139,9 +132,7 @@ public class SphinxClientTest {
         byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
         Arrays.fill(message, (byte) 0xaa);
 
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
         BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
 
@@ -157,9 +148,7 @@ public class SphinxClientTest {
         byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
         Arrays.fill(message, (byte) 0xaa);
 
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
         BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
 
@@ -261,9 +250,7 @@ public class SphinxClientTest {
         byte[] dest = "bob".getBytes();
         byte[] message = "this is a test".getBytes();
 
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
         BigInteger x = pkiPriv.get(useNodes[0]).x;
 
@@ -321,9 +308,7 @@ public class SphinxClientTest {
         byte[] dest = new byte[SphinxClient.MAX_DEST_SIZE + 1];
         byte[] message = "this is a test".getBytes();
 
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
     }
 
     @Test(expected = SphinxException.class)
@@ -331,8 +316,6 @@ public class SphinxClientTest {
         byte[] dest = "bob".getBytes();
         byte[] message = new byte[(client.getMaxPayloadSize() - dest.length) + 1];
 
-        DestinationAndMessage destinationAndMessage = new DestinationAndMessage(dest, message);
-
-        client.createForwardMessage(nodesRouting, nodeKeys, destinationAndMessage);
+        client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
     }
 }

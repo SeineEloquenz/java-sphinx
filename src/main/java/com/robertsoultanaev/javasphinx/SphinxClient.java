@@ -222,14 +222,12 @@ public class SphinxClient {
      * Create a forward Sphinx message.
      * @param nodelist List of encoded mix node identifiers used to route the Sphinx packet.
      * @param keys List of the corresponding public keys of the mix nodes in nodelist.
-     * @param destinationAndMessage Final destination and the data payload of the Sphinx packet.
+     * @param destination Final destination.
+     * @param message Data payload.
      * @return Header and payload of a Sphinx packet encrypted in a nested manner.
      */
-    public PacketContent createForwardMessage(byte[][] nodelist, ECPoint[] keys, DestinationAndMessage destinationAndMessage) {
-        byte[] dest = destinationAndMessage.destination();
-        byte[] message = destinationAndMessage.message();
-
-        if (!(dest.length > 0 && dest.length < MAX_DEST_SIZE)) {
+    public PacketContent createForwardMessage(byte[][] nodelist, ECPoint[] keys, byte[] destination, byte[] message) {
+        if (!(destination.length > 0 && destination.length < MAX_DEST_SIZE)) {
             throw new SphinxException("Destination has to be between 1 and " + MAX_DEST_SIZE + " bytes long");
         }
 
@@ -250,8 +248,8 @@ public class SphinxClient {
         packer = MessagePack.newDefaultBufferPacker();
         try {
             packer.packArrayHeader(2);
-            packer.packBinaryHeader(dest.length);
-            packer.writePayload(dest);
+            packer.packBinaryHeader(destination.length);
+            packer.writePayload(destination);
             packer.packBinaryHeader(message.length);
             packer.writePayload(message);
             packer.close();
