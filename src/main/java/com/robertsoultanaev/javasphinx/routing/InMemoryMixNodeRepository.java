@@ -1,7 +1,9 @@
 package com.robertsoultanaev.javasphinx.routing;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class InMemoryMixNodeRepository implements MixNodeRepository {
     private final Map<Integer, MixNode> nodes;
@@ -17,5 +19,10 @@ public final class InMemoryMixNodeRepository implements MixNodeRepository {
     @Override
     public MixNode byId(int nodeId) {
         return nodes.get(nodeId);
+    }
+
+    @Override
+    public Set<MixNode> all() {
+        return new HashSet<>(nodes.values());
     }
 }
