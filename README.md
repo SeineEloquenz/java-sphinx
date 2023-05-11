@@ -63,10 +63,10 @@ for (int i = 0; i < 10; i++) {
 Before encoding a Sphinx packet, the route through the mix network must be selected. This can be done with the `SphinxClient.randSubset()` method:
 
 ```java
-Object[] pubKeys = pki.keySet().toArray();
+Integer[] pubKeys = pki.keySet().toArray(new Integer[0]);
 int[] nodePool = new int[pubKeys.length];
 for (int i = 0; i < nodePool.length; i++) {
-    nodePool[i] = (Integer) pubKeys[i];
+    nodePool[i] = pubKeys[i];
 }
 int[] useNodes = SphinxClient.randSubset(nodePool, r);
 ```

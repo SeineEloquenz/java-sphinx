@@ -8,6 +8,7 @@ import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
 import com.robertsoultanaev.javasphinx.packet.reply.SingleUseReplyBlock;
+import com.robertsoultanaev.javasphinx.pki.PkiEntry;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
 import org.junit.Before;
@@ -21,8 +22,6 @@ import java.util.HashMap;
 import static org.junit.Assert.*;
 
 public class SphinxClientTest {
-    record PkiEntry(BigInteger x, ECPoint y) {
-    }
 
     private SphinxParams params;
     private SphinxClient client;
@@ -52,10 +51,10 @@ public class SphinxClientTest {
             pkiPub.put(i, pubEntry);
         }
 
-        Object[] pubKeys = pkiPub.keySet().toArray();
+        Integer[] pubKeys = pkiPub.keySet().toArray(new Integer[0]);
         int[] nodePool = new int[pubKeys.length];
         for (int i = 0; i < nodePool.length; i++) {
-            nodePool[i] = (Integer) pubKeys[i];
+            nodePool[i] = pubKeys[i];
         }
         useNodes = client.randSubset(nodePool, r);
 
@@ -66,7 +65,7 @@ public class SphinxClientTest {
 
         nodeKeys = new ECPoint[useNodes.length];
         for (int i = 0; i < useNodes.length; i++) {
-            nodeKeys[i] = pkiPub.get(useNodes[i]).y;
+            nodeKeys[i] = pkiPub.get(useNodes[i]).pub();
         }
     }
 
@@ -121,7 +120,7 @@ public class SphinxClientTest {
 
         PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
-        BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
+        BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).priv();
 
         testRouting(params, packetContent, firstNodeKey, dest, message);
     }
@@ -134,7 +133,7 @@ public class SphinxClientTest {
 
         PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
-        BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
+        BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).priv();
 
         testRouting(params, packetContent, firstNodeKey, dest, message);
     }
@@ -150,7 +149,7 @@ public class SphinxClientTest {
 
         PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
-        BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).x;
+        BigInteger firstNodeKey = pkiPriv.get(useNodes[0]).priv();
 
         testRouting(params, packetContent, firstNodeKey, dest, message);
     }
@@ -174,7 +173,7 @@ public class SphinxClientTest {
 
             if (flag.equals(SphinxClient.RELAY_FLAG)) {
                 int addr = unpacker.unpackInt();
-                currentNodeKey = pkiPriv.get(addr).x;
+                currentNodeKey = pkiPriv.get(addr).priv();
 
                 unpacker.close();
             } else if (flag.equals(SphinxClient.DEST_FLAG)) {
@@ -200,7 +199,7 @@ public class SphinxClientTest {
         SingleUseReplyBlock surb = client.createSurb(nodesRouting, nodeKeys, surbDest);
         PacketContent packetContent = client.packageSurb(surb.nymTuple(), message);
 
-        BigInteger x = pkiPriv.get(useNodes[0]).x;
+        BigInteger x = pkiPriv.get(useNodes[0]).priv();
         MessageUnpacker unpacker;
 
         while (true) {
@@ -218,7 +217,7 @@ public class SphinxClientTest {
 
             if (flag.equals(SphinxClient.RELAY_FLAG)) {
                 int addr = unpacker.unpackInt();
-                x = pkiPriv.get(addr).x;
+                x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
             } else if (flag.equals(SphinxClient.SURB_FLAG)) {
@@ -252,7 +251,7 @@ public class SphinxClientTest {
 
         PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
 
-        BigInteger x = pkiPriv.get(useNodes[0]).x;
+        BigInteger x = pkiPriv.get(useNodes[0]).priv();
 
         MessageUnpacker unpacker;
 
@@ -271,7 +270,7 @@ public class SphinxClientTest {
 
             if (flag.equals(SphinxClient.RELAY_FLAG)) {
                 int addr = unpacker.unpackInt();
-                x = pkiPriv.get(addr).x;
+                x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
             } else if (flag.equals(SphinxClient.DEST_FLAG)) {
