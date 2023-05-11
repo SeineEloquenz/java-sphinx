@@ -14,14 +14,16 @@ import org.bouncycastle.util.encoders.Base64;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Endpoint {
 
     public static int PACKET_HEADER_SIZE = 24;
 
-    private record RoutingInformation(byte[][] nodesRouting, ECPoint[] nodeKeys) {
+    private record RoutingInformation(byte[][] nodesRouting, ECPoint[] nodeKeys, int firstNodeId) {
     }
 
     private final SphinxClient client;
@@ -34,17 +36,16 @@ public class Endpoint {
         this.numRouteNodes = numRouteNodes;
     }
 
-    public SphinxPacket[] splitIntoSphinxPackets(OutwardMessage message) {
+    public Map<SphinxPacket, MixNode> splitIntoSphinxPackets(OutwardMessage message) {
         UUID messageId = UUID.randomUUID();
         byte[] dest = DestinationEncoding.encode(message.address());
 
-        int packetPayloadSize = client.getMaxPayloadSize() - dest.length - PACKET_HEADER_SIZE;
-        int packetsInMessage = (int) Math.ceil((double) message.message().length / packetPayloadSize);
-        SphinxPacket[] sphinxPackets = new SphinxPacket[packetsInMessage];
+        final var packetPayloadSize = client.getMaxPayloadSize() - dest.length - PACKET_HEADER_SIZE;
+        final var packetsInMessage = (int) Math.ceil((double) message.message().length / packetPayloadSize);
+        final var sphinxPackets = new HashMap<SphinxPacket, MixNode>();
 
         for (int i = 0; i < packetsInMessage; i++) {
-
-            ByteBuffer packetHeader = ByteBuffer.allocate(Endpoint.PACKET_HEADER_SIZE);
+            final var packetHeader = ByteBuffer.allocate(Endpoint.PACKET_HEADER_SIZE);
             packetHeader.putLong(messageId.getMostSignificantBits());
             packetHeader.putLong(messageId.getLeastSignificantBits());
             packetHeader.putInt(packetsInMessage);
@@ -55,7 +56,8 @@ public class Endpoint {
 
             RoutingInformation routingInformation = generateRoutingInformation(this.numRouteNodes);
 
-            sphinxPackets[i] = createSphinxPacket(dest, sphinxPayload, routingInformation);
+            final var targetMix = mixNodeRepository.byId(routingInformation.firstNodeId());
+            sphinxPackets.put(createSphinxPacket(dest, sphinxPayload, routingInformation), targetMix);
         }
 
         return sphinxPackets;
@@ -86,7 +88,7 @@ public class Endpoint {
             nodeKeys[i] = mixNodeRepository.byId(usedNodes[i]).publicKey();
         }
 
-        return new RoutingInformation(nodesRouting, nodeKeys);
+        return new RoutingInformation(nodesRouting, nodeKeys, usedNodes[0]);
     }
 
     public AssembledMessage reassemble(List<Packet> packets) {
