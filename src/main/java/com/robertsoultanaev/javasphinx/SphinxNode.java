@@ -2,6 +2,7 @@ package com.robertsoultanaev.javasphinx;
 
 import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
+import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.Header;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import org.bouncycastle.math.ec.ECPoint;
@@ -69,5 +70,9 @@ public class SphinxNode {
         PacketContent packetContent1 = new PacketContent(header, delta);
 
         return new ProcessedPacket(tag, routing, packetContent1, macKey);
+    }
+
+    public SphinxPacket repack(ProcessedPacket packet) {
+        return new SphinxPacket(params, packet.packetContent());
     }
 }

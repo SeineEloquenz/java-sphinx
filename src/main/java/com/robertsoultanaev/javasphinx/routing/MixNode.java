@@ -9,10 +9,6 @@ import java.net.Socket;
 
 public record MixNode(int id, String host, int port, ECPoint publicKey) {
 
-    public Socket openSocket() throws IOException {
-        return new Socket(host, port);
-    }
-
     /**
      * Sends a {@link SphinxPacket} via the given {@link SphinxClient}
      * @param client client to use for sending
