@@ -14,13 +14,13 @@ public class TestMixNodeRepository implements MixNodeRepository {
     public TestMixNodeRepository() {
         this.backend = new InMemoryMixNodeRepository();
         backend.put(0, buildNode(0, "mix0", "ApBDNYe3z9m+lLJ7EOYDsvfvdHSjsjPMV+ZLvwA="));
-        backend.put(0, buildNode(1, "mix1", "AijlyfUMqyCEN//rOha2f1snYYRTkrjGZzChuGA="));
-        backend.put(0, buildNode(2, "mix2", "A5CQCatbjAYIhdfcw2NXpD0rCloJxe4oX/KT3a8="));
+        backend.put(1, buildNode(1, "mix1", "AijlyfUMqyCEN//rOha2f1snYYRTkrjGZzChuGA="));
+        backend.put(2, buildNode(2, "mix2", "A5CQCatbjAYIhdfcw2NXpD0rCloJxe4oX/KT3a8="));
     }
 
     @Override
     public MixNode byId(final int i) {
-        return null;
+        return backend.byId(i);
     }
 
     @Override
