@@ -4,9 +4,9 @@ import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.encoders.Base64;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Class to house various utility methods.
@@ -51,12 +51,12 @@ public final class SerializationUtils {
         return point.getEncoded(true);
     }
 
-    public static String stringifyByteArray(byte[] bytes) {
-        return new String(bytes, StandardCharsets.UTF_8);
+    public static String base64encode(byte[] bytes) {
+        return Base64.toBase64String(bytes);
     }
 
-    public static byte[] destringifyByteArray(String encodedByteArray) {
-        return encodedByteArray.getBytes(StandardCharsets.UTF_8);
+    public static byte[] base64decode(String encodedByteArray) {
+        return Base64.decode(encodedByteArray);
     }
 
     public static byte[] encodeInt(int value) {
