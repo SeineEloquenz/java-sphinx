@@ -31,4 +31,13 @@ public record MixNode(int id, String host, int port, ECPoint publicKey) {
             os.write(client.packMessage(packet));
         }
     }
+
+    public JsonObject toJson() {
+        final var json = new JsonObject();
+        json.addProperty("id", id);
+        json.addProperty("host", host);
+        json.addProperty("port", port);
+        json.addProperty("pubKey", SerializationUtils.base64encode(SerializationUtils.encodeECPoint(publicKey)));
+        return json;
+    }
 }
