@@ -1,9 +1,7 @@
 package com.robertsoultanaev.javasphinx.coordinator;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.robertsoultanaev.javasphinx.SerializationUtils;
 import com.robertsoultanaev.javasphinx.routing.MixNode;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -37,18 +35,10 @@ public class CoordinatorClient {
                 final var mixArray = JsonParser.parseString(response.body().string()).getAsJsonArray();
                 mixArray.asList().stream()
                         .map(JsonElement::getAsJsonObject)
-                        .map(this::parseFromJson)
+                        .map(MixNode::fromJson)
                         .forEach(mixes::add);
                 return mixes;
             }
         }
-    }
-
-    private MixNode parseFromJson(JsonObject mixJson) {
-        final var id = mixJson.get("id").getAsInt();
-        final var host = mixJson.get("host").getAsString();
-        final var port = mixJson.get("port").getAsInt();
-        final var pubKey = SerializationUtils.decodeECPoint(SerializationUtils.base64decode(mixJson.get("pubKey").getAsString()));
-        return new MixNode(id, host, port, pubKey);
     }
 }

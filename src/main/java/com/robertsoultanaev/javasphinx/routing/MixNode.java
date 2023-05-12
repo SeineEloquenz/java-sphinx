@@ -1,5 +1,7 @@
 package com.robertsoultanaev.javasphinx.routing;
 
+import com.google.gson.JsonObject;
+import com.robertsoultanaev.javasphinx.SerializationUtils;
 import com.robertsoultanaev.javasphinx.SphinxClient;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import org.bouncycastle.math.ec.ECPoint;
@@ -8,6 +10,14 @@ import java.io.IOException;
 import java.net.Socket;
 
 public record MixNode(int id, String host, int port, ECPoint publicKey) {
+
+    public static MixNode fromJson(JsonObject json) {
+        final var id = json.get("id").getAsInt();
+        final var host = json.get("host").getAsString();
+        final var port = json.get("port").getAsInt();
+        final var pubKey = SerializationUtils.decodeECPoint(SerializationUtils.base64decode(json.get("pubKey").getAsString()));
+        return new MixNode(id, host, port, pubKey);
+    }
 
     /**
      * Sends a {@link SphinxPacket} via the given {@link SphinxClient}
