@@ -52,19 +52,19 @@ public class SphinxNode {
 
         byte[] betaPadZeroes = new byte[2 * params.bodyLength()];
         Arrays.fill(betaPadZeroes, (byte) 0x00);
-        byte[] betaPad = Util.concatenate(beta, betaPadZeroes);
+        byte[] betaPad = SerializationUtils.concatenate(beta, betaPadZeroes);
 
         byte[] B = params.xorRho(params.hrho(aesS), betaPad);
 
         byte length = B[0];
-        byte[] routing = Util.slice(B, 1, 1 + length);
-        byte[] rest = Util.slice(B, 1 + length, B.length);
+        byte[] routing = SerializationUtils.slice(B, 1, 1 + length);
+        byte[] rest = SerializationUtils.slice(B, 1 + length, B.length);
 
         byte[] tag = params.htau(aesS);
         BigInteger b = params.hb(alpha, aesS);
         alpha = group.expon(alpha, b);
-        gamma = Util.slice(rest, params.keyLength());
-        beta = Util.slice(rest, params.keyLength(), params.keyLength() + (params.headerLength() - 32));
+        gamma = SerializationUtils.slice(rest, params.keyLength());
+        beta = SerializationUtils.slice(rest, params.keyLength(), params.keyLength() + (params.headerLength() - 32));
         delta = params.pii(params.hpi(aesS), delta);
 
         byte[] macKey = params.hpi(aesS);

@@ -1,8 +1,8 @@
 package com.robertsoultanaev.javasphinx.conformance;
 
+import com.robertsoultanaev.javasphinx.SerializationUtils;
 import com.robertsoultanaev.javasphinx.SphinxClient;
 import com.robertsoultanaev.javasphinx.SphinxParams;
-import com.robertsoultanaev.javasphinx.Util;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import org.bouncycastle.math.ec.ECPoint;
@@ -28,7 +28,7 @@ public class ConformanceClient {
             nodesRouting[i] = client.encodeNode(nodeId);
 
             byte[] encodedKey = Base64.decode(split[1]);
-            nodeKeys[i] = Util.decodeECPoint(encodedKey);
+            nodeKeys[i] = SerializationUtils.decodeECPoint(encodedKey);
         }
 
         PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);

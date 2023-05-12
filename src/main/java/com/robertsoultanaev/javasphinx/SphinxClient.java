@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.robertsoultanaev.javasphinx.Util.concatenate;
-import static com.robertsoultanaev.javasphinx.Util.slice;
+import static com.robertsoultanaev.javasphinx.SerializationUtils.concatenate;
+import static com.robertsoultanaev.javasphinx.SerializationUtils.slice;
 
 /**
  * Class housing the methods to create, package and receive Sphinx messages.
@@ -476,7 +476,7 @@ public class SphinxClient {
             throw new SphinxException("Failed to unpack alpha");
         }
 
-        ECPoint alpha = Util.decodeECPoint(encodedAlpha);
+        ECPoint alpha = SerializationUtils.decodeECPoint(encodedAlpha);
 
         Header header = new Header(alpha, beta, gamma);
 
@@ -541,7 +541,7 @@ public class SphinxClient {
     }
 
     private byte[] packECPoint(ECPoint ecPoint) {
-        byte[] encodedEcPoint = ecPoint.getEncoded(true);
+        byte[] encodedEcPoint = SerializationUtils.encodeECPoint(ecPoint);
 
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
         try {

@@ -1,6 +1,6 @@
+import com.robertsoultanaev.javasphinx.SerializationUtils;
 import com.robertsoultanaev.javasphinx.SphinxException;
 import com.robertsoultanaev.javasphinx.SphinxParams;
-import com.robertsoultanaev.javasphinx.Util;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
@@ -11,7 +11,8 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class SphinxParamsTest {
 
@@ -186,7 +187,7 @@ public class SphinxParamsTest {
     @Test
     public void getAesKey() {
         byte[] encodedEcPoint = Hex.decode("02a66335a59f1277c193315eb2db69808e6eaf15c944286765c0adcae2");
-        ECPoint s = Util.decodeECPoint(encodedEcPoint);
+        ECPoint s = SerializationUtils.decodeECPoint(encodedEcPoint);
 
         byte[] expectedOutput = Hex.decode("ef9706c84715d56800ef8fceb5671d55");
         byte[] output = params.getAesKey(s);
@@ -207,7 +208,7 @@ public class SphinxParamsTest {
     @Test
     public void hb() {
         byte[] encodedEcPoint = Hex.decode("02a66335a59f1277c193315eb2db69808e6eaf15c944286765c0adcae2");
-        ECPoint alpha = Util.decodeECPoint(encodedEcPoint);
+        ECPoint alpha = SerializationUtils.decodeECPoint(encodedEcPoint);
 
         BigInteger expectedOutput = new BigInteger("99291632524521846780855783327754112432");
         BigInteger output = params.hb(alpha, key);

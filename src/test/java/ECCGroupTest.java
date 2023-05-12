@@ -1,5 +1,5 @@
+import com.robertsoultanaev.javasphinx.SerializationUtils;
 import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
-import com.robertsoultanaev.javasphinx.Util;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
@@ -9,7 +9,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class ECCGroupTest {
 
@@ -27,7 +28,7 @@ public class ECCGroupTest {
         ECPoint base = eccGroup.getGenerator();
 
         byte[] expectedOutput = Hex.decode("02a66335a59f1277c193315eb2db69808e6eaf15c944286765c0adcae2");
-        byte[] output = eccGroup.expon(base, secret).getEncoded(true);
+        byte[] output = SerializationUtils.encodeECPoint(eccGroup.expon(base, secret));
 
         assertArrayEquals(expectedOutput, output);
     }
@@ -41,7 +42,7 @@ public class ECCGroupTest {
         List<BigInteger> exponents = Arrays.asList(secret1, secret2);
 
         byte[] expectedOutput = Hex.decode("03085f86c52bbb391e7fba0dd1e39541fe89ac5b6afd576c338948abe0");
-        byte[] output = eccGroup.multiexpon(base, exponents).getEncoded(true);
+        byte[] output = SerializationUtils.encodeECPoint(eccGroup.multiexpon(base, exponents));
 
         assertArrayEquals(expectedOutput, output);
     }
@@ -64,7 +65,7 @@ public class ECCGroupTest {
     @Test
     public void printable() {
         byte[] encodedEcPoint = Hex.decode("02a66335a59f1277c193315eb2db69808e6eaf15c944286765c0adcae2");
-        ECPoint ecPoint = Util.decodeECPoint(encodedEcPoint);
+        ECPoint ecPoint = SerializationUtils.decodeECPoint(encodedEcPoint);
 
         byte[] expectedOutput = Hex.decode("04a66335a59f1277c193315eb2db69808e6eaf15c944286765c0adcae21a0a05d040ade5db0d89c90a9ec1970c7642bcaa5bc9319ceee935d0");
         byte[] output = eccGroup.printable(ecPoint);

@@ -9,12 +9,12 @@ import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.modes.SICBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
-
-import java.math.BigInteger;
 import org.bouncycastle.math.ec.ECPoint;
 
-import static com.robertsoultanaev.javasphinx.Util.slice;
-import static com.robertsoultanaev.javasphinx.Util.concatenate;
+import java.math.BigInteger;
+
+import static com.robertsoultanaev.javasphinx.SerializationUtils.concatenate;
+import static com.robertsoultanaev.javasphinx.SerializationUtils.slice;
 
 /**
  * Class to represent the parameters of the Sphinx cryptographic computations, and house the internal crytographic functions used to create Sphinx packets.

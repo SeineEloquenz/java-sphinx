@@ -1,7 +1,7 @@
 package com.robertsoultanaev.javasphinx.endpoint;
 
+import com.robertsoultanaev.javasphinx.SerializationUtils;
 import com.robertsoultanaev.javasphinx.SphinxClient;
-import com.robertsoultanaev.javasphinx.Util;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import com.robertsoultanaev.javasphinx.routing.DestinationEncoding;
@@ -52,7 +52,7 @@ public class Endpoint {
             packetHeader.putInt(i);
 
             byte[] packetPayload = copyUpToNum(message.message(), packetPayloadSize * i, packetPayloadSize);
-            byte[] sphinxPayload = Util.concatenate(packetHeader.array(), packetPayload);
+            byte[] sphinxPayload = SerializationUtils.concatenate(packetHeader.array(), packetPayload);
 
             RoutingInformation routingInformation = generateRoutingInformation(this.numRouteNodes);
 
@@ -97,7 +97,7 @@ public class Endpoint {
         for (int i = 0; i < packets.size(); i++) {
             payloads[i] = packets.get(i).payload();
         }
-        byte[] message = Util.concatenate(payloads);
+        byte[] message = SerializationUtils.concatenate(payloads);
 
         return new AssembledMessage(uuid, message);
     }

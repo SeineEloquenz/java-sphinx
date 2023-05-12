@@ -6,13 +6,14 @@ import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Class to house various utility methods.
  */
-public final class Util {
+public final class SerializationUtils {
 
-    private Util() {
+    private SerializationUtils() {
     }
     /**
      * Concatenate the provided byte arrays into one byte array.
@@ -44,6 +45,18 @@ public final class Util {
     public static ECPoint decodeECPoint(byte[] encodedECPoint) {
         ECCurve ecCurve = ECNamedCurveTable.getParameterSpec(ECCGroup.DEFAULT_CURVE_NAME).getCurve();
         return ecCurve.decodePoint(encodedECPoint);
+    }
+
+    public static byte[] encodeECPoint(ECPoint point) {
+        return point.getEncoded(true);
+    }
+
+    public static String stringifyByteArray(byte[] bytes) {
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    public static byte[] destringifyByteArray(String encodedByteArray) {
+        return encodedByteArray.getBytes(StandardCharsets.UTF_8);
     }
 
     public static byte[] encodeInt(int value) {
