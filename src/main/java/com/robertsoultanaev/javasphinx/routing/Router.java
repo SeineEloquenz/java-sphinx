@@ -30,7 +30,6 @@ public class Router {
     }
 
     public OutwardMessage findForwardDestination(ProcessedPacket packet) throws IOException {
-
         final var unpacker = MessagePack.newDefaultUnpacker(packet.routing());
         final var routingLength = unpacker.unpackArrayHeader();
         final var flag = unpacker.unpackString();
