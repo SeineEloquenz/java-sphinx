@@ -16,10 +16,10 @@ public class CoordinatorClient {
     private final String host;
     private final int port;
 
-    public CoordinatorClient(String host, int port) {
+    public CoordinatorClient(CoordinatorConfig config) {
         this.client = new OkHttpClient();
-        this.host = host;
-        this.port = port;
+        this.host = config.host();
+        this.port = config.port();
     }
 
     public Set<MixNode> getAllMixes() throws IOException {
