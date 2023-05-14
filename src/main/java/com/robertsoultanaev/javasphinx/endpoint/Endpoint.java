@@ -9,7 +9,6 @@ import com.robertsoultanaev.javasphinx.routing.MixNode;
 import com.robertsoultanaev.javasphinx.routing.MixNodeRepository;
 import com.robertsoultanaev.javasphinx.routing.OutwardMessage;
 import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.util.encoders.Base64;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -101,9 +100,7 @@ public class Endpoint {
         return result;
     }
 
-    public Packet parseMessageToPacket(byte[] encodedMessage) {
-        byte[] message = Base64.decode(encodedMessage);
-
+    public Packet parseMessageToPacket(byte[] message) {
         byte[] headerBytes = Arrays.copyOfRange(message, 0, Endpoint.PACKET_HEADER_SIZE);
         ByteBuffer byteBuffer = ByteBuffer.wrap(headerBytes);
         long uuidHigh = byteBuffer.getLong();
