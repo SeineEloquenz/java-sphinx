@@ -23,12 +23,11 @@ public class Receiver {
      * Reeceives a packet and if this packet completes a message, the {@link ReassemblyHandler} is called
      * @param packet packet to receive
      */
-    public void receive(byte[] packet) {
-        final var decodedPacket = endpoint.parseMessageToPacket(packet);
-        messageStore.putIfAbsent(decodedPacket.uuid(), Collections.synchronizedSet(new HashSet<>()));
-        final var partialMessage = messageStore.get(decodedPacket.uuid());
-        partialMessage.add(decodedPacket);
-        if (decodedPacket.packetsInMessage() == partialMessage.size()) {
+    public void receive(Packet packet) {
+        messageStore.putIfAbsent(packet.uuid(), Collections.synchronizedSet(new HashSet<>()));
+        final var partialMessage = messageStore.get(packet.uuid());
+        partialMessage.add(packet);
+        if (packet.packetsInMessage() == partialMessage.size()) {
             final var assembledMessage = endpoint.reassemble(partialMessage);
             reassemblyHandler.onReassembly(assembledMessage);
         }
