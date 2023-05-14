@@ -15,8 +15,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class Endpoint {
@@ -91,12 +91,18 @@ public class Endpoint {
         return new RoutingInformation(nodesRouting, nodeKeys, usedNodes[0]);
     }
 
-    public AssembledMessage reassemble(List<Packet> packets) {
-        String uuid = packets.get(0).uuid();
+    /**
+     * Reassemble an {@link AssembledMessage} from received {@link Packet}s
+     * @param packets received packets, may not be empty
+     * @return the assembled message
+     */
+    public AssembledMessage reassemble(Set<Packet> packets) {
+        assert packets.size() != 0;
+        final var uuid = packets.stream().findAny().get().uuid();
         byte[][] payloads = new byte[packets.size()][];
-        for (int i = 0; i < packets.size(); i++) {
-            payloads[i] = packets.get(i).payload();
-        }
+        packets.stream()
+                .sorted(Comparator.comparingInt(Packet::sequenceNumber))
+                .forEach(packet -> payloads[packet.sequenceNumber()] = packet.payload());
         byte[] message = SerializationUtils.concatenate(payloads);
 
         return new AssembledMessage(uuid, message);
@@ -123,7 +129,7 @@ public class Endpoint {
 
         int packetsInMessage = byteBuffer.getInt();
         int sequenceNumber = byteBuffer.getInt();
-        String uuid = new UUID(uuidHigh, uuidLow).toString();
+        final var uuid = new UUID(uuidHigh, uuidLow);
         byte[] payload = Arrays.copyOfRange(message, 24, message.length);
 
         return new Packet(uuid, sequenceNumber, packetsInMessage, payload);

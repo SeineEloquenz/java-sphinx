@@ -1,4 +1,6 @@
 package com.robertsoultanaev.javasphinx.endpoint;
 
-public record AssembledMessage(String uuid, byte[] messageBody) {
+import java.util.UUID;
+
+public record AssembledMessage(UUID uuid, byte[] messageBody) {
 }
