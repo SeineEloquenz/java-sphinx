@@ -31,6 +31,7 @@ public class Receiver {
         if (packet.packetsInMessage() == partialMessage.size()) {
             final var assembledMessage = reassemble(partialMessage);
             reassemblyHandler.onReassembly(assembledMessage);
+            messageStore.remove(packet.uuid());
         }
     }
 
