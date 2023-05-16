@@ -10,11 +10,11 @@ import java.io.IOException;
  */
 public record ProcessedPacket(byte[] tag, byte[] routing, PacketContent packetContent, byte[] macKey) {
 
-    public String routingFlag() throws IOException {
+    public RoutingFlag routingFlag() throws IOException {
         final var unpacker = MessagePack.newDefaultUnpacker(routing);
         int routingLen = unpacker.unpackArrayHeader();
         String flag = unpacker.unpackString();
         unpacker.close();
-        return flag;
+        return RoutingFlag.byValue(flag);
     }
 }
