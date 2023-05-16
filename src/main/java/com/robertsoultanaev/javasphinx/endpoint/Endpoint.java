@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class Endpoint {
@@ -52,7 +53,7 @@ public class Endpoint {
             byte[] packetPayload = copyUpToNum(message.message(), packetPayloadSize * i, packetPayloadSize);
             byte[] sphinxPayload = SerializationUtils.concatenate(packetHeader.array(), packetPayload);
 
-            RoutingInformation routingInformation = generateRoutingInformation(this.numRouteNodes);
+            RoutingInformation routingInformation = generateRoutingInformation(this.numRouteNodes, generateDelays(numRouteNodes));
 
             final var targetMix = mixNodeRepository.byId(routingInformation.firstNodeId());
             sphinxPackets.put(createSphinxPacket(dest, sphinxPayload, routingInformation), targetMix);
@@ -61,12 +62,20 @@ public class Endpoint {
         return sphinxPackets;
     }
 
+    private byte[] generateDelays(int numRouteNodes) {
+        final var rand = new Random();
+        final var delays = new byte[numRouteNodes];
+        rand.nextBytes(delays);
+        return delays;
+    }
+
     private SphinxPacket createSphinxPacket(byte[] dest, byte[] message, RoutingInformation routingInformation) {
         PacketContent packetContent = client.createForwardMessage(routingInformation.nodesRouting, routingInformation.nodeKeys, dest, message);
         return client.createPacket(packetContent);
     }
 
-    private RoutingInformation generateRoutingInformation(int numRouteNodes) {
+    private RoutingInformation generateRoutingInformation(int numRouteNodes, byte[] delays) {
+        assert delays.length == numRouteNodes;
         final byte[][] nodesRouting;
         final ECPoint[] nodeKeys;
 
@@ -78,7 +87,7 @@ public class Endpoint {
 
         nodesRouting = new byte[usedNodes.length][];
         for (int i = 0; i < usedNodes.length; i++) {
-            nodesRouting[i] = client.encodeNode(usedNodes[i]);
+            nodesRouting[i] = client.encodeNode(usedNodes[i], delays[i]);
         }
 
         nodeKeys = new ECPoint[usedNodes.length];

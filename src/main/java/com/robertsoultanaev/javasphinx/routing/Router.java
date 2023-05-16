@@ -17,16 +17,17 @@ public class Router {
         this.client = client;
     }
 
-    public MixNode findRelay(ProcessedPacket packet) throws IOException {
+    public RelayInformation findRelay(ProcessedPacket packet) throws IOException {
         final var unpacker = MessagePack.newDefaultUnpacker(packet.routing());
         final var routingLength = unpacker.unpackArrayHeader();
         final var flag = unpacker.unpackString();
         if (!SphinxClient.RELAY_FLAG.equals(flag)) {
             throw new SphinxException("Packet should not be relayed!");
         }
+        final var delay = unpacker.unpackByte();
         final var nextNodeId = unpacker.unpackInt();
         unpacker.close();
-        return repository.byId(nextNodeId);
+        return new RelayInformation(repository.byId(nextNodeId), delay);
     }
 
     public OutwardMessage findForwardDestination(ProcessedPacket packet) throws IOException {

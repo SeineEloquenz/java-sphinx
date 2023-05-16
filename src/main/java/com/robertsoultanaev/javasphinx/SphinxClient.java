@@ -54,12 +54,13 @@ public class SphinxClient {
      * @param idnum Identifier of the mix node.
      * @return Identifier of the mix node in binary format.
      */
-    public byte[] encodeNode(int idnum) {
+    public byte[] encodeNode(int idnum, byte delay) {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
         try {
             packer.packArrayHeader(2);
             packer.packString(RELAY_FLAG);
+            packer.packByte(delay);
             packer.packInt(idnum);
             packer.close();
         } catch (IOException ex) {
