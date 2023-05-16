@@ -4,6 +4,7 @@ import com.robertsoultanaev.javasphinx.SphinxNode;
 import com.robertsoultanaev.javasphinx.SphinxParams;
 import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
 import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
+import com.robertsoultanaev.javasphinx.packet.RoutingFlag;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
@@ -169,15 +170,15 @@ public class SphinxClientTest {
             int routingLen = unpacker.unpackArrayHeader();
             String flag = unpacker.unpackString();
 
-            assertTrue(flag.equals(SphinxClient.RELAY_FLAG) || flag.equals(SphinxClient.DEST_FLAG));
+            assertTrue(flag.equals(RoutingFlag.RELAY.value()) || flag.equals(RoutingFlag.DESTINATION.value()));
 
-            if (flag.equals(SphinxClient.RELAY_FLAG)) {
+            if (flag.equals(RoutingFlag.RELAY.value())) {
                 byte delay = unpacker.unpackByte();
                 int addr = unpacker.unpackInt();
                 currentNodeKey = pkiPriv.get(addr).priv();
 
                 unpacker.close();
-            } else if (flag.equals(SphinxClient.DEST_FLAG)) {
+            } else if (flag.equals(RoutingFlag.DESTINATION.value())) {
                 unpacker.close();
 
                 assertEquals(1, routingLen);
@@ -214,15 +215,15 @@ public class SphinxClientTest {
             unpacker.unpackArrayHeader();
             String flag = unpacker.unpackString();
 
-            assertTrue(flag.equals(SphinxClient.RELAY_FLAG) || flag.equals(SphinxClient.SURB_FLAG));
+            assertTrue(flag.equals(RoutingFlag.RELAY.value()) || flag.equals(RoutingFlag.SURB.value()));
 
-            if (flag.equals(SphinxClient.RELAY_FLAG)) {
+            if (flag.equals(RoutingFlag.RELAY.value())) {
                 byte delay = unpacker.unpackByte();
                 int addr = unpacker.unpackInt();
                 x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
-            } else if (flag.equals(SphinxClient.SURB_FLAG)) {
+            } else if (flag.equals(RoutingFlag.SURB.value())) {
                 int destLength = unpacker.unpackBinaryHeader();
                 byte[] finalDest = unpacker.readPayload(destLength);
                 int surbIdLength = unpacker.unpackBinaryHeader();
@@ -268,14 +269,14 @@ public class SphinxClientTest {
             int routingLen = unpacker.unpackArrayHeader();
             String flag = unpacker.unpackString();
 
-            assertTrue(flag.equals(SphinxClient.RELAY_FLAG) || flag.equals(SphinxClient.DEST_FLAG));
+            assertTrue(flag.equals(RoutingFlag.RELAY.value()) || flag.equals(RoutingFlag.DESTINATION.value()));
 
-            if (flag.equals(SphinxClient.RELAY_FLAG)) {
+            if (flag.equals(RoutingFlag.RELAY.value())) {
                 int addr = unpacker.unpackInt();
                 x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
-            } else if (flag.equals(SphinxClient.DEST_FLAG)) {
+            } else if (flag.equals(RoutingFlag.DESTINATION.value())) {
                 unpacker.close();
 
                 assertEquals(1, routingLen);
