@@ -1,6 +1,7 @@
 package com.robertsoultanaev.javasphinx;
 
 import com.robertsoultanaev.javasphinx.crypto.ECCGroup;
+import com.robertsoultanaev.javasphinx.packet.RoutingFlag;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.Header;
 import com.robertsoultanaev.javasphinx.packet.header.HeaderAndSecrets;
@@ -29,9 +30,6 @@ import static com.robertsoultanaev.javasphinx.SerializationUtils.slice;
  * Class housing the methods to create, package and receive Sphinx messages.
  */
 public class SphinxClient {
-    public static final String RELAY_FLAG = String.valueOf((char) 0xf0);
-    public static final String DEST_FLAG = String.valueOf((char) 0xf1);
-    public static final String SURB_FLAG = String.valueOf((char) 0xf2);
 
     public static final int MAX_DEST_SIZE = 127;
 
@@ -59,7 +57,7 @@ public class SphinxClient {
 
         try {
             packer.packArrayHeader(2);
-            packer.packString(RELAY_FLAG);
+            packer.packString(RoutingFlag.RELAY.value());
             packer.packByte(delay);
             packer.packInt(idnum);
             packer.close();
@@ -237,7 +235,7 @@ public class SphinxClient {
         packer = MessagePack.newDefaultBufferPacker();
         try {
             packer.packArrayHeader(1);
-            packer.packString(DEST_FLAG);
+            packer.packString(RoutingFlag.DESTINATION.value());
             packer.close();
         } catch (IOException ex) {
             throw new SphinxException("Failed to pack the destination flag");
@@ -291,7 +289,7 @@ public class SphinxClient {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
         try {
             packer.packArrayHeader(3);
-            packer.packString(SURB_FLAG);
+            packer.packString(RoutingFlag.SURB.value());
             packer.packBinaryHeader(dest.length);
             packer.writePayload(dest);
             packer.packBinaryHeader(xid.length);

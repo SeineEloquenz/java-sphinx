@@ -3,6 +3,7 @@ package com.robertsoultanaev.javasphinx.routing;
 import com.robertsoultanaev.javasphinx.SphinxClient;
 import com.robertsoultanaev.javasphinx.SphinxException;
 import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
+import com.robertsoultanaev.javasphinx.packet.RoutingFlag;
 import org.msgpack.core.MessagePack;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class Router {
         final var unpacker = MessagePack.newDefaultUnpacker(packet.routing());
         final var routingLength = unpacker.unpackArrayHeader();
         final var flag = unpacker.unpackString();
-        if (!SphinxClient.RELAY_FLAG.equals(flag)) {
+        if (!RoutingFlag.RELAY.value().equals(flag)) {
             throw new SphinxException("Packet should not be relayed!");
         }
         final var delay = unpacker.unpackByte();
@@ -34,7 +35,7 @@ public class Router {
         final var unpacker = MessagePack.newDefaultUnpacker(packet.routing());
         final var routingLength = unpacker.unpackArrayHeader();
         final var flag = unpacker.unpackString();
-        if (!SphinxClient.DEST_FLAG.equals(flag)) {
+        if (!RoutingFlag.DESTINATION.value().equals(flag)) {
             throw new SphinxException("Packet should not be forwarded!");
         }
         unpacker.close();
