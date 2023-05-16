@@ -52,13 +52,13 @@ public class SphinxClient {
      * @param idnum Identifier of the mix node.
      * @return Identifier of the mix node in binary format.
      */
-    public byte[] encodeNode(int idnum, byte delay) {
+    public byte[] encodeNode(int idnum, int delay) {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
         try {
-            packer.packArrayHeader(2);
+            packer.packArrayHeader(3);
             packer.packString(RoutingFlag.RELAY.value());
-            packer.packByte(delay);
+            packer.packInt(delay);
             packer.packInt(idnum);
             packer.close();
         } catch (IOException ex) {
@@ -343,8 +343,8 @@ public class SphinxClient {
      * @return Final destination and data payload of the Sphinx message.
      */
     public DestinationAndMessage receiveForward(byte[] macKey, byte[] delta) {
-        byte[] body = slice(delta, params.keyLength(), delta.length);
         byte[] mac = slice(delta, params.keyLength());
+        byte[] body = slice(delta, params.keyLength(), delta.length);
 
         byte[] expectedMac = params.mu(macKey, body);
 
@@ -356,7 +356,8 @@ public class SphinxClient {
 
         byte[] encodedDestAndMsg = unpadBody(slice(delta, params.keyLength(), delta.length));
         MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(encodedDestAndMsg);
-        byte[] destination, message;
+        byte[] destination;
+        byte[] message;
         try {
             unpacker.unpackArrayHeader();
             int destLength = unpacker.unpackBinaryHeader();

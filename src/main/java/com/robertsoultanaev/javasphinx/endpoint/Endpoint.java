@@ -62,10 +62,12 @@ public class Endpoint {
         return sphinxPackets;
     }
 
-    private byte[] generateDelays(int numRouteNodes) {
+    private int[] generateDelays(int numRouteNodes) {
         final var rand = new Random();
-        final var delays = new byte[numRouteNodes];
-        rand.nextBytes(delays);
+        final var delays = new int[numRouteNodes];
+        for (int i = 0; i < delays.length; i++) {
+            delays[i] = rand.nextInt(10000);
+        }
         return delays;
     }
 
@@ -74,7 +76,7 @@ public class Endpoint {
         return client.createPacket(packetContent);
     }
 
-    private RoutingInformation generateRoutingInformation(int numRouteNodes, byte[] delays) {
+    private RoutingInformation generateRoutingInformation(int numRouteNodes, int[] delays) {
         assert delays.length == numRouteNodes;
         final byte[][] nodesRouting;
         final ECPoint[] nodeKeys;

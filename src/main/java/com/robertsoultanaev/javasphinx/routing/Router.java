@@ -25,7 +25,7 @@ public class Router {
         if (!RoutingFlag.RELAY.value().equals(flag)) {
             throw new SphinxException("Packet should not be relayed!");
         }
-        final var delay = unpacker.unpackByte();
+        final var delay = unpacker.unpackInt();
         final var nextNodeId = unpacker.unpackInt();
         unpacker.close();
         return new RelayInformation(repository.byId(nextNodeId), delay);
