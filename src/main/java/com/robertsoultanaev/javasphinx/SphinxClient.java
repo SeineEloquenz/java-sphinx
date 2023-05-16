@@ -56,6 +56,7 @@ public class SphinxClient {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
         try {
+            // This is NOT specific to the string, this is the amount of 2 byte values following, regardless of type!!!
             packer.packArrayHeader(3);
             packer.packString(RoutingFlag.RELAY.value());
             packer.packInt(delay);
