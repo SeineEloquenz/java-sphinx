@@ -5,10 +5,8 @@ import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.Header;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
-import com.robertsoultanaev.javasphinx.routing.MixNode;
 import org.bouncycastle.math.ec.ECPoint;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -76,11 +74,7 @@ public class SphinxNode {
         return new ProcessedPacket(tag, routing, packetContent1, macKey);
     }
 
-    public void send(MixNode destination, ProcessedPacket packet) throws IOException {
-        destination.send(client, repack(packet));
-    }
-
-    private SphinxPacket repack(ProcessedPacket packet) {
+    public SphinxPacket repack(ProcessedPacket packet) {
         return new SphinxPacket(params, packet.packetContent());
     }
 }
