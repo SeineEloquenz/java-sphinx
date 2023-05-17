@@ -25,6 +25,10 @@ public class SphinxNode {
         this.secret = secret;
     }
 
+    public SphinxClient client() {
+        return client;
+    }
+
     /**
      * Method that processes Sphinx packets at a mix node
      * @param packetContent Header and encrypted payload of the Sphinx packet
