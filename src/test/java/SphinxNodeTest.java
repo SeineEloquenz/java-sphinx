@@ -5,6 +5,7 @@ import com.robertsoultanaev.javasphinx.SphinxParams;
 import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
 import com.robertsoultanaev.javasphinx.packet.header.Header;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
+import com.robertsoultanaev.javasphinx.routing.RandomRoutingStrategy;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class SphinxNodeTest {
     @Test
     public void processSphinxPacket() {
         final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
-        final var node = new SphinxNode(new SphinxParams(), secret);
+        final var node = new SphinxNode(new SphinxParams(), new RandomRoutingStrategy(), secret);
 
         byte[] encodedEcPoint = Hex.decode("0360071b99894f0e9fe6ebc9f5a4ca1763b2aaf965278ea3aa90758a42");
         ECPoint inputAlpha = SerializationUtils.decodeECPoint(encodedEcPoint);
@@ -63,7 +64,7 @@ public class SphinxNodeTest {
     @Test(expected = SphinxException.class)
     public void processSphinxPacketBadMac() {
         final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
-        final var node = new SphinxNode(new SphinxParams(), secret);
+        final var node = new SphinxNode(new SphinxParams(), new RandomRoutingStrategy(), secret);
 
         byte[] encodedEcPoint = Hex.decode("0360071b99894f0e9fe6ebc9f5a4ca1763b2aaf965278ea3aa90758a42");
         ECPoint inputAlpha = SerializationUtils.decodeECPoint(encodedEcPoint);
@@ -106,7 +107,7 @@ public class SphinxNodeTest {
                 return 0;
             }
         };
-        final var node = new SphinxNode(badParams, secret);
+        final var node = new SphinxNode(badParams, new RandomRoutingStrategy(), secret);
 
         node.sphinxProcess(inputPacketContent);
     }

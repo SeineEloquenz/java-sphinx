@@ -10,6 +10,7 @@ import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
 import com.robertsoultanaev.javasphinx.packet.reply.SingleUseReplyBlock;
 import com.robertsoultanaev.javasphinx.pki.PkiEntry;
+import com.robertsoultanaev.javasphinx.routing.RandomRoutingStrategy;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
 import org.junit.Before;
@@ -34,7 +35,7 @@ public class SphinxClientTest {
     @Before
     public void setUp() {
         params = new SphinxParams();
-        client = new SphinxClient(params);
+        client = new SphinxClient(params, new RandomRoutingStrategy());
 
         int r = 5;
 
@@ -57,7 +58,7 @@ public class SphinxClientTest {
         for (int i = 0; i < nodePool.length; i++) {
             nodePool[i] = pubKeys[i];
         }
-        useNodes = client.randSubset(nodePool, r);
+        useNodes = client.route(nodePool, r);
 
         nodesRouting = new byte[useNodes.length][];
         for (int i = 0; i < useNodes.length; i++) {
@@ -142,7 +143,7 @@ public class SphinxClientTest {
     @Test
     public void routeSphinxMessageNonDefaultBodySize() throws Exception {
         SphinxParams params = new SphinxParams(16, 4096, 192, new ECCGroup());
-        SphinxClient client = new SphinxClient(params);
+        SphinxClient client = new SphinxClient(params, new RandomRoutingStrategy());
 
         byte[] dest = "bob".getBytes();
         byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
@@ -160,7 +161,7 @@ public class SphinxClientTest {
         MessageUnpacker unpacker;
 
         while (true) {
-            final var node = new SphinxNode(params, currentNodeKey);
+            final var node = new SphinxNode(params, new RandomRoutingStrategy(), currentNodeKey);
             ProcessedPacket ret = node.sphinxProcess(packetContent);
             packetContent = ret.packetContent();
 
@@ -205,7 +206,7 @@ public class SphinxClientTest {
         MessageUnpacker unpacker;
 
         while (true) {
-            final var node = new SphinxNode(params, x);
+            final var node = new SphinxNode(params, new RandomRoutingStrategy(), x);
             ProcessedPacket ret = node.sphinxProcess(packetContent);
             packetContent = ret.packetContent();
 
@@ -244,7 +245,7 @@ public class SphinxClientTest {
     @Test(expected = SphinxException.class)
     public void randSubsetBadNu() {
         int[] nodePool = {0,0,0,0,0};
-        client.randSubset(nodePool, nodePool.length + 1);
+        client.route(nodePool, nodePool.length + 1);
     }
 
     @Test(expected = SphinxException.class)
@@ -259,7 +260,7 @@ public class SphinxClientTest {
         MessageUnpacker unpacker;
 
         while (true) {
-            final var node = new SphinxNode(params, x);
+            final var node = new SphinxNode(params, new RandomRoutingStrategy(), x);
             ProcessedPacket ret = node.sphinxProcess(packetContent);
             packetContent = ret.packetContent();
 

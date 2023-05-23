@@ -5,6 +5,7 @@ import com.robertsoultanaev.javasphinx.packet.ProcessedPacket;
 import com.robertsoultanaev.javasphinx.packet.SphinxPacket;
 import com.robertsoultanaev.javasphinx.packet.header.Header;
 import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
+import com.robertsoultanaev.javasphinx.routing.RoutingStrategy;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
@@ -19,9 +20,9 @@ public class SphinxNode {
     private final SphinxClient client;
     private final BigInteger secret;
 
-    public SphinxNode(final SphinxParams params, final BigInteger secret) {
+    public SphinxNode(final SphinxParams params, final RoutingStrategy routingStrategy, final BigInteger secret) {
         this.params = params;
-        this.client = new SphinxClient(params);
+        this.client = new SphinxClient(params, routingStrategy);
         this.secret = secret;
     }
 

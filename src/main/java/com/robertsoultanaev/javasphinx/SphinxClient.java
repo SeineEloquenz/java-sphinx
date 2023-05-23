@@ -9,6 +9,7 @@ import com.robertsoultanaev.javasphinx.packet.header.PacketContent;
 import com.robertsoultanaev.javasphinx.packet.message.DestinationAndMessage;
 import com.robertsoultanaev.javasphinx.packet.reply.NymTuple;
 import com.robertsoultanaev.javasphinx.packet.reply.SingleUseReplyBlock;
+import com.robertsoultanaev.javasphinx.routing.RoutingStrategy;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 import org.msgpack.core.MessageBufferPacker;
@@ -20,7 +21,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.robertsoultanaev.javasphinx.SerializationUtils.concatenate;
@@ -34,9 +34,11 @@ public class SphinxClient {
     public static final int MAX_DEST_SIZE = 127;
 
     private final SphinxParams params;
+    private final RoutingStrategy routingStrategy;
 
-    public SphinxClient(final SphinxParams params) {
+    public SphinxClient(final SphinxParams params, final RoutingStrategy routingStrategy) {
         this.params = params;
+        this.routingStrategy = routingStrategy;
     }
 
     public SphinxPacket createPacket(PacketContent packetContent) {
@@ -70,38 +72,17 @@ public class SphinxClient {
     }
 
     /**
-     * Select a random subset of mix node identifiers.
-     * @param lst List of mix node identifiers.
-     * @param nu Number of identifiers to select from lst.
-     * @return Array of identifiers of length nu, randomly taken from lst.
+     * Select a subset of mix node identifiers according to the Client's {@link RoutingStrategy}
+     * @param identifiers list of mix node ids
+     * @param mixCount count of ids to select from identifiers
+     * @return mix identifiers
      */
-    public int[] randSubset(int[] lst, int nu) {
-        if (lst.length < nu) {
-            throw new SphinxException("Number of possible elements (" + lst.length + ") was less than the requested number (" + nu + ")");
+    public int[] route(int[] identifiers, int mixCount) {
+        if (identifiers.length < mixCount) {
+            throw new SphinxException("Number of possible elements (%d) was less than the requested number (%d)"
+                    .formatted(identifiers.length, mixCount));
         }
-
-        SecureRandom secureRandom = new SecureRandom();
-
-        long[] randoms = new long[lst.length];
-        for (int i = 0; i < randoms.length; i++) {
-            byte[] rand = new byte[8];
-            secureRandom.nextBytes(rand);
-            randoms[i] = (new BigInteger(1, rand)).longValue();
-        }
-
-        HashMap<Long, Integer> randToIndex = new HashMap<>();
-        for (int i = 0; i < randoms.length; i++) {
-            randToIndex.put(randoms[i], i);
-        }
-
-        Arrays.sort(randoms);
-
-        int[] result = new int[nu];
-        for (int i = 0; i < nu; i++) {
-            result[i] = lst[randToIndex.get(randoms[i])];
-        }
-
-        return result;
+        return routingStrategy.route(identifiers, mixCount);
     }
 
     /**
