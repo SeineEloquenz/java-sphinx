@@ -20,6 +20,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -62,7 +63,7 @@ public class SphinxClientTest {
 
         nodesRouting = new byte[useNodes.length][];
         for (int i = 0; i < useNodes.length; i++) {
-            nodesRouting[i] = client.encodeNode(useNodes[i], (byte) 11);
+            nodesRouting[i] = client.encodeNode(useNodes[i], (new Random()).nextLong());
         }
 
         nodeKeys = new ECPoint[useNodes.length];
@@ -174,8 +175,8 @@ public class SphinxClientTest {
             assertTrue(flag.equals(RoutingFlag.RELAY.value()) || flag.equals(RoutingFlag.DESTINATION.value()));
 
             if (flag.equals(RoutingFlag.RELAY.value())) {
-                int delay = unpacker.unpackInt();
                 int addr = unpacker.unpackInt();
+                long id = unpacker.unpackLong();
                 currentNodeKey = pkiPriv.get(addr).priv();
 
                 unpacker.close();
@@ -219,8 +220,8 @@ public class SphinxClientTest {
             assertTrue(flag.equals(RoutingFlag.RELAY.value()) || flag.equals(RoutingFlag.SURB.value()));
 
             if (flag.equals(RoutingFlag.RELAY.value())) {
-                int delay = unpacker.unpackInt();
                 int addr = unpacker.unpackInt();
+                long id = unpacker.unpackLong();
                 x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
@@ -273,8 +274,8 @@ public class SphinxClientTest {
             assertTrue(flag.equals(RoutingFlag.RELAY.value()) || flag.equals(RoutingFlag.DESTINATION.value()));
 
             if (flag.equals(RoutingFlag.RELAY.value())) {
-                final var delay = unpacker.unpackInt();
                 final var addr = unpacker.unpackInt();
+                final var id = unpacker.unpackLong();
                 x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
