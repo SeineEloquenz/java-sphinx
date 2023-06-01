@@ -7,6 +7,7 @@ import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Base64;
 
 import java.nio.ByteBuffer;
+import java.util.UUID;
 
 /**
  * Class to house various utility methods.
@@ -37,6 +38,16 @@ public final class SerializationUtils {
         return result;
     }
 
+    public byte[] encodeUuid(UUID uuid) {
+        return concatenate(encodeLong(uuid.getMostSignificantBits()), encodeLong(uuid.getLeastSignificantBits()));
+    }
+
+    public UUID decodeUuid(byte[] array) {
+        final var mostSigBits = decodeLong(slice(array, 4));
+        final var leastSigBits = decodeLong(slice(array, 4, 8));
+        return new UUID(mostSigBits, leastSigBits);
+    }
+
     /**
      * Decode an elliptic curve point from its binary representation.
      * @param encodedECPoint Binary representation of an elliptic curve point.
@@ -57,6 +68,17 @@ public final class SerializationUtils {
 
     public static byte[] base64decode(String encodedByteArray) {
         return Base64.decode(encodedByteArray);
+    }
+
+    public static byte[] encodeLong(long value) {
+        ByteBuffer b = ByteBuffer.allocate(8);
+        b.putLong(value);
+        return b.array();
+    }
+
+    public static long decodeLong(byte[] array) {
+        ByteBuffer b = ByteBuffer.wrap(array);
+        return b.getLong();
     }
 
     public static byte[] encodeInt(int value) {
