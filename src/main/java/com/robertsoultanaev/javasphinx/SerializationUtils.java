@@ -38,11 +38,11 @@ public final class SerializationUtils {
         return result;
     }
 
-    public byte[] encodeUuid(UUID uuid) {
+    public static byte[] encodeUuid(UUID uuid) {
         return concatenate(encodeLong(uuid.getMostSignificantBits()), encodeLong(uuid.getLeastSignificantBits()));
     }
 
-    public UUID decodeUuid(byte[] array) {
+    public static UUID decodeUuid(byte[] array) {
         final var mostSigBits = decodeLong(slice(array, 4));
         final var leastSigBits = decodeLong(slice(array, 4, 8));
         return new UUID(mostSigBits, leastSigBits);
