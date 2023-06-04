@@ -55,7 +55,7 @@ public class SphinxClient {
      * @param uuid packet identifier, the first mix uses this to route reply packets
      * @return Identifier of the mix node in binary format.
      */
-    public byte[] encodeNode(int idnum, long uuid) {
+    public byte[] encodeNode(int idnum, long uuid) throws SphinxException {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
         try {
@@ -78,7 +78,7 @@ public class SphinxClient {
      * @param mixCount count of ids to select from identifiers
      * @return mix identifiers
      */
-    public int[] route(int[] identifiers, int mixCount) {
+    public int[] route(int[] identifiers, int mixCount) throws SphinxException {
         if (identifiers.length < mixCount) {
             throw new SphinxException("Number of possible elements (%d) was less than the requested number (%d)"
                     .formatted(identifiers.length, mixCount));
@@ -93,7 +93,7 @@ public class SphinxClient {
      * @param dest Final destination of the Sphinx packet.
      * @return Header and the list of secrets used to encrypt the payload in a nested manner.
      */
-    public HeaderAndSecrets createHeader(byte[][] nodelist, ECPoint[] keys, byte[] dest) {
+    public HeaderAndSecrets createHeader(byte[][] nodelist, ECPoint[] keys, byte[] dest) throws SphinxException {
         class HeaderRecord {
             final ECPoint alpha;
             final ECPoint s;
@@ -208,7 +208,7 @@ public class SphinxClient {
      * @param message Data payload.
      * @return Header and payload of a Sphinx packet encrypted in a nested manner.
      */
-    public PacketContent createForwardMessage(byte[][] nodelist, ECPoint[] keys, byte[] destination, byte[] message) {
+    public PacketContent createForwardMessage(byte[][] nodelist, ECPoint[] keys, byte[] destination, byte[] message) throws SphinxException {
         if (!(destination.length > 0 && destination.length < MAX_DEST_SIZE)) {
             throw new SphinxException("Destination has to be between 1 and " + MAX_DEST_SIZE + " bytes long");
         }
@@ -262,7 +262,7 @@ public class SphinxClient {
      * @param dest Final destination of the Sphinx packet.
      * @return An identifier for the SURB, key tuple to receive a message addressed to this SURB, and the reply block itself.
      */
-    public SingleUseReplyBlock createSurb(byte[][] nodelist, ECPoint[] keys, byte[] dest) {
+    public SingleUseReplyBlock createSurb(byte[][] nodelist, ECPoint[] keys, byte[] dest) throws SphinxException {
         SecureRandom secureRandom = new SecureRandom();
         int nu = nodelist.length;
 
@@ -309,7 +309,7 @@ public class SphinxClient {
      * @param message The data payload of the Sphinx packet.
      * @return Header and payload of a Sphinx packet encrypted in a nested manner.
      */
-    public PacketContent packageSurb(NymTuple nymTuple, byte[] message) {
+    public PacketContent packageSurb(NymTuple nymTuple, byte[] message) throws SphinxException {
         byte[] zeroes = new byte[params.keyLength()];
         Arrays.fill(zeroes, (byte) 0x00);
         byte[] zeroPaddedMessage = concatenate(zeroes, message);
@@ -325,7 +325,7 @@ public class SphinxClient {
      * @param delta The payload of the Sphinx message.
      * @return Final destination and data payload of the Sphinx message.
      */
-    public DestinationAndMessage receiveForward(byte[] macKey, byte[] delta) {
+    public DestinationAndMessage receiveForward(byte[] macKey, byte[] delta) throws SphinxException {
         byte[] mac = slice(delta, params.keyLength());
         byte[] body = slice(delta, params.keyLength(), delta.length);
 
@@ -361,7 +361,7 @@ public class SphinxClient {
      * @param delta The encrypted data payload of the Sphinx packet.
      * @return The data payload of the Sphinx packet.
      */
-    public byte[] receiveSurb(byte[][] keytuple, byte[] delta) {
+    public byte[] receiveSurb(byte[][] keytuple, byte[] delta) throws SphinxException {
         byte[] ktilde = keytuple[0];
         for (int i = keytuple.length - 1; i > 0; i--) {
             delta = params.pi(keytuple[i], delta);
@@ -385,7 +385,7 @@ public class SphinxClient {
      * @param sphinxPacket Sphinx packet and the Sphinx parameter lengths.
      * @return Sphinx message in binary format.
      */
-    public byte[] packMessage(SphinxPacket sphinxPacket) {
+    public byte[] packMessage(SphinxPacket sphinxPacket) throws SphinxException {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
         int headerLength = sphinxPacket.headerLength();
@@ -423,7 +423,7 @@ public class SphinxClient {
      * @param m Binary message.
      * @return Binary message serialised into SphinxPacket type.
      */
-    public SphinxPacket unpackMessage(byte[] m) {
+    public SphinxPacket unpackMessage(byte[] m) throws SphinxException {
         MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(m);
         int headerLength, bodyLength;
         byte[] packedAlpha, beta, gamma, delta;
@@ -472,7 +472,7 @@ public class SphinxClient {
      * Compute the maximum number of bytes that can be packet into a single Sphinx packet payload with the given parameters.
      * @return Maximum number of bytes that can be packet into a single Sphinx packet payload with the given parameters.
      */
-    public int getMaxPayloadSize() {
+    public int getMaxPayloadSize() throws SphinxException {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
         try {
             packer.packArrayHeader(2);
@@ -491,7 +491,7 @@ public class SphinxClient {
         return params.bodyLength() - params.keyLength() - padByteLength - msgPackOverhead;
     }
 
-    private byte[] padBody(int msgtotalsize, byte[] body) {
+    private byte[] padBody(int msgtotalsize, byte[] body) throws SphinxException {
         byte[] initialPadByte = {(byte) 0x7f};
         int numPadBytes = msgtotalsize - (body.length + 1);
 
@@ -523,7 +523,7 @@ public class SphinxClient {
         return ret;
     }
 
-    private byte[] packECPoint(ECPoint ecPoint) {
+    private byte[] packECPoint(ECPoint ecPoint) throws SphinxException {
         byte[] encodedEcPoint = SerializationUtils.encodeECPoint(ecPoint);
 
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();

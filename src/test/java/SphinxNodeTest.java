@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 public class SphinxNodeTest {
     @Test
-    public void processSphinxPacket() {
+    public void processSphinxPacket() throws SphinxException {
         final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
         final var node = new SphinxNode(new SphinxParams(), new RandomRoutingStrategy(), secret);
 
@@ -62,7 +62,7 @@ public class SphinxNodeTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void processSphinxPacketBadMac() {
+    public void processSphinxPacketBadMac() throws SphinxException {
         final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
         final var node = new SphinxNode(new SphinxParams(), new RandomRoutingStrategy(), secret);
 
@@ -85,7 +85,7 @@ public class SphinxNodeTest {
 
 
     @Test(expected = SphinxException.class)
-    public void processSphinxPacketBadBetaLength() {
+    public void processSphinxPacketBadBetaLength() throws SphinxException {
         final var secret = new BigInteger("8594556911718241073939018500914787396871958538713354284467465626596");
 
         byte[] encodedEcPoint = Hex.decode("0360071b99894f0e9fe6ebc9f5a4ca1763b2aaf965278ea3aa90758a42");

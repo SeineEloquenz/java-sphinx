@@ -34,7 +34,7 @@ public class SphinxClientTest {
     private int[] useNodes;
 
     @Before
-    public void setUp() {
+    public void setUp() throws SphinxException {
         params = new SphinxParams();
         client = new SphinxClient(params, new RandomRoutingStrategy());
 
@@ -73,7 +73,7 @@ public class SphinxClientTest {
     }
 
     @Test
-    public void encodeAndDecode() {
+    public void encodeAndDecode() throws SphinxException {
         byte[] dest = "bob".getBytes();
         byte[] message = "this is a test".getBytes();
         PacketContent packetContent = client.createForwardMessage(nodesRouting, nodeKeys, dest, message);
@@ -94,7 +94,7 @@ public class SphinxClientTest {
     }
 
     @Test
-    public void encodeAndDecodeMaxMessageLength() {
+    public void encodeAndDecodeMaxMessageLength() throws SphinxException {
         byte[] dest = "bob".getBytes();
         byte[] message = new byte[client.getMaxPayloadSize() - dest.length];
         Arrays.fill(message, (byte) 0xaa);
@@ -244,7 +244,7 @@ public class SphinxClientTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void randSubsetBadNu() {
+    public void randSubsetBadNu() throws SphinxException {
         int[] nodePool = {0,0,0,0,0};
         client.route(nodePool, nodePool.length + 1);
     }
@@ -298,7 +298,7 @@ public class SphinxClientTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void receiveSurbBadDelta() {
+    public void receiveSurbBadDelta() throws SphinxException {
         byte[] surbDest = "myself".getBytes();
         byte[] message = "This is a reply".getBytes();
 
@@ -309,7 +309,7 @@ public class SphinxClientTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void createForwardDestTooLong() {
+    public void createForwardDestTooLong() throws SphinxException {
         byte[] dest = new byte[SphinxClient.MAX_DEST_SIZE + 1];
         byte[] message = "this is a test".getBytes();
 
@@ -317,7 +317,7 @@ public class SphinxClientTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void createForwardDestAndMessageTooLong() {
+    public void createForwardDestAndMessageTooLong() throws SphinxException {
         byte[] dest = "bob".getBytes();
         byte[] message = new byte[(client.getMaxPayloadSize() - dest.length) + 1];
 

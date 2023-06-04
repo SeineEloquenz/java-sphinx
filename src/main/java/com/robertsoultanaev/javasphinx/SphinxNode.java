@@ -35,7 +35,7 @@ public class SphinxNode {
      * @param packetContent Header and encrypted payload of the Sphinx packet
      * @return The new header and payload of the Sphinx packet along with some auxiliary information
      */
-    public ProcessedPacket sphinxProcess(PacketContent packetContent) {
+    public ProcessedPacket sphinxProcess(PacketContent packetContent) throws SphinxException {
         ECCGroup group = params.getGroup();
         ECPoint alpha = packetContent.header().alpha();
         byte[] beta = packetContent.header().beta();

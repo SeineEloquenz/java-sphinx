@@ -50,7 +50,7 @@ public class SphinxParams {
     }
 
     public int packetLength() {
-        return headerLength + bodyLength;
+        return headerLength + 2 * keyLength + bodyLength;
     }
 
     public ECCGroup getGroup() {
@@ -93,7 +93,7 @@ public class SphinxParams {
         }
     }
 
-    public byte[] lionessEnc(byte[] key, byte[] message) {
+    public byte[] lionessEnc(byte[] key, byte[] message) throws SphinxException {
         lionessCheckLengths(key, message);
 
         // Round 1
@@ -126,7 +126,7 @@ public class SphinxParams {
         return concatenate(r3Short, c);
     }
 
-    public byte[] lionessDec(byte[] key, byte[] message) {
+    public byte[] lionessDec(byte[] key, byte[] message) throws SphinxException {
         lionessCheckLengths(key, message);
 
         byte[] r4Short = slice(message, keyLength);
@@ -151,7 +151,7 @@ public class SphinxParams {
         return concatenate(c, r1Long);
     }
 
-    public byte[] xorRho(byte[] key, byte[] plain) {
+    public byte[] xorRho(byte[] key, byte[] plain) throws SphinxException {
         if (key.length != keyLength) {
             throw new SphinxException("Length of provided key (" + key.length + ") did not match the required key length (" + keyLength + ")");
         }
@@ -171,7 +171,7 @@ public class SphinxParams {
         return slice(output, keyLength);
     }
 
-    public byte[] pi(byte[] key, byte[] data) {
+    public byte[] pi(byte[] key, byte[] data) throws SphinxException {
         if (key.length != keyLength) {
             throw new SphinxException("Length of provided key (" + key.length + ") did not match the required key length (" + keyLength + ")");
         }
@@ -183,7 +183,7 @@ public class SphinxParams {
         return lionessEnc(key, data);
     }
 
-    public byte[] pii(byte[] key, byte[] data) {
+    public byte[] pii(byte[] key, byte[] data) throws SphinxException {
         if (key.length != keyLength) {
             throw new SphinxException("Length of provided key (" + key.length + ") did not match the required key length (" + keyLength + ")");
         }

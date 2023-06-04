@@ -56,7 +56,7 @@ public class SphinxParamsTest {
     }
 
     @Test
-    public void lionessEncrypt() {
+    public void lionessEncrypt() throws SphinxException {
         byte[] expectedOutput = Hex.decode("937e52902f5300c07b0dbd39d4e10b9d0de98278ed16d2ef2f4652d5318041da6d16188c11f4dbfba12b36f7e23a1a8daebff5942703463241d7ed2c909116e913bb9f74d645fb8d99971f299d21ac51");
         byte[] output = params.lionessEnc(key, plaintext);
 
@@ -64,7 +64,7 @@ public class SphinxParamsTest {
     }
 
     @Test
-    public void lionessEncryptThenDecrypt() {
+    public void lionessEncryptThenDecrypt() throws SphinxException {
         byte[] ciphertext = params.lionessEnc(key, plaintext);
         byte[] decryptedCiphertext = params.lionessDec(key, ciphertext);
 
@@ -72,19 +72,19 @@ public class SphinxParamsTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void lionessEncryptBadKeyLength() {
+    public void lionessEncryptBadKeyLength() throws SphinxException {
         byte[] badKey = Arrays.copyOf(key, key.length - 1);
         params.lionessEnc(badKey, plaintext);
     }
 
     @Test(expected = SphinxException.class)
-    public void lionessEncryptBadMessageLength() {
+    public void lionessEncryptBadMessageLength() throws SphinxException {
         byte[] badMessage = Arrays.copyOf(plaintext, (key.length / 2) - 1);
         params.lionessEnc(key, badMessage);
     }
 
     @Test(expected = SphinxException.class)
-    public void lionessDecryptBadKeyLength() {
+    public void lionessDecryptBadKeyLength() throws SphinxException {
         byte[] ciphertext = params.lionessEnc(key, plaintext);
 
         byte[] badKey = Arrays.copyOf(key, key.length - 1);
@@ -92,7 +92,7 @@ public class SphinxParamsTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void lionessDecryptBadMessageLength() {
+    public void lionessDecryptBadMessageLength() throws SphinxException {
         byte[] ciphertext = params.lionessEnc(key, plaintext);
         byte[] badMessage = Arrays.copyOf(ciphertext, (key.length / 2) - 1);
 
@@ -100,7 +100,7 @@ public class SphinxParamsTest {
     }
 
     @Test
-    public void xorRho() {
+    public void xorRho() throws SphinxException {
         byte[] expectedOutput = Hex.decode("0e000098e34558b1c728b1580787f881012f2a1eaf3ac383fd596b13d87a95cce1376225b739b15e630f89fe64dbc54752a22ed567f1b368cae6aa1c374fdb008602fbbe5b1cfe3c7c256669e080903d");
         byte[] output = params.xorRho(key, plaintext);
 
@@ -108,7 +108,7 @@ public class SphinxParamsTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void xorRhoBadKeyLength() {
+    public void xorRhoBadKeyLength() throws SphinxException {
         byte[] badKey = Arrays.copyOf(key, key.length - 1);
         params.xorRho(badKey, plaintext);
     }
@@ -122,7 +122,7 @@ public class SphinxParamsTest {
     }
 
     @Test
-    public void piEncryptThenDecrypt() {
+    public void piEncryptThenDecrypt() throws SphinxException {
         SecureRandom random = new SecureRandom();
         byte[] plaintext = new byte[params.bodyLength()];
         random.nextBytes(plaintext);
@@ -134,7 +134,7 @@ public class SphinxParamsTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void piEncryptBadKeyLength() {
+    public void piEncryptBadKeyLength() throws SphinxException {
         SecureRandom random = new SecureRandom();
         byte[] plaintext = new byte[params.bodyLength()];
         random.nextBytes(plaintext);
@@ -145,7 +145,7 @@ public class SphinxParamsTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void piEncryptBadMessageLength() {
+    public void piEncryptBadMessageLength() throws SphinxException {
         SecureRandom random = new SecureRandom();
         byte[] plaintext = new byte[params.bodyLength() - 1];
         random.nextBytes(plaintext);
@@ -154,7 +154,7 @@ public class SphinxParamsTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void piDecryptBadKeyLength() {
+    public void piDecryptBadKeyLength() throws SphinxException {
         SecureRandom random = new SecureRandom();
         byte[] plaintext = new byte[params.bodyLength()];
         random.nextBytes(plaintext);
@@ -166,7 +166,7 @@ public class SphinxParamsTest {
     }
 
     @Test(expected = SphinxException.class)
-    public void piDecryptBadMessageLength() {
+    public void piDecryptBadMessageLength() throws SphinxException {
         SecureRandom random = new SecureRandom();
         byte[] plaintext = new byte[params.bodyLength()];
         random.nextBytes(plaintext);
