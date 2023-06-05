@@ -21,6 +21,8 @@ import static com.robertsoultanaev.javasphinx.SerializationUtils.slice;
  */
 public class SphinxParams {
 
+    private static final int OVERHEAD = 19;
+
     private final int keyLength;
     private final int bodyLength;
     private final int headerLength;
@@ -50,7 +52,11 @@ public class SphinxParams {
     }
 
     public int packetLength() {
-        return headerLength + 2 * keyLength + bodyLength;
+        return headerLength + bodyLength;
+    }
+
+    public int packedPacketLength() {
+        return 2 * OVERHEAD + packetLength();
     }
 
     public ECCGroup getGroup() {
