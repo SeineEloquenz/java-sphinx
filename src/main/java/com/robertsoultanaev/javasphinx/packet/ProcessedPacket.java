@@ -27,8 +27,8 @@ public record ProcessedPacket(byte[] tag, byte[] routing, PacketContent packetCo
             throw new IllegalStateException("Tried to extract relayInfo on a packet that should not be relayed!");
         }
         final var id = unpacker.unpackInt();
-        final var uuid = unpacker.unpackLong();
+        final var additionalInfo = unpacker.unpackInt();
         unpacker.close();
-        return new RelayInfo(id, uuid);
+        return new RelayInfo(id, additionalInfo);
     }
 }

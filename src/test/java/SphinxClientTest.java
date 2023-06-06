@@ -63,7 +63,7 @@ public class SphinxClientTest {
 
         nodesRouting = new byte[useNodes.length][];
         for (int i = 0; i < useNodes.length; i++) {
-            nodesRouting[i] = client.encodeNode(useNodes[i], (new Random()).nextLong());
+            nodesRouting[i] = client.encodeNode(useNodes[i], (new Random()).nextInt());
         }
 
         nodeKeys = new ECPoint[useNodes.length];
@@ -176,7 +176,7 @@ public class SphinxClientTest {
 
             if (flag.equals(RoutingFlag.RELAY.value())) {
                 int addr = unpacker.unpackInt();
-                long id = unpacker.unpackLong();
+                int additionalInfo = unpacker.unpackInt();
                 currentNodeKey = pkiPriv.get(addr).priv();
 
                 unpacker.close();
@@ -221,7 +221,7 @@ public class SphinxClientTest {
 
             if (flag.equals(RoutingFlag.RELAY.value())) {
                 int addr = unpacker.unpackInt();
-                long id = unpacker.unpackLong();
+                int additionalInfo = unpacker.unpackInt();
                 x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
@@ -275,7 +275,7 @@ public class SphinxClientTest {
 
             if (flag.equals(RoutingFlag.RELAY.value())) {
                 final var addr = unpacker.unpackInt();
-                final var id = unpacker.unpackLong();
+                final var additionalInfo = unpacker.unpackInt();
                 x = pkiPriv.get(addr).priv();
 
                 unpacker.close();
