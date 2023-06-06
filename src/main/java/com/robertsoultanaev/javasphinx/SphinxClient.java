@@ -50,7 +50,7 @@ public class SphinxClient {
     }
 
     /**
-     * Encode the mix node id into binary format.
+     * Encode the mix node nextNodeId into binary format.
      * @param idnum Identifier of the mix node.
      * @param additionalInfo packet identifier, the first mix uses this to route reply packets
      * @return Identifier of the mix node in binary format.
