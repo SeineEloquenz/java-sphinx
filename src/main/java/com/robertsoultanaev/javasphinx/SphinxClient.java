@@ -52,10 +52,10 @@ public class SphinxClient {
     /**
      * Encode the mix node id into binary format.
      * @param idnum Identifier of the mix node.
-     * @param uuid packet identifier, the first mix uses this to route reply packets
+     * @param additionalInfo packet identifier, the first mix uses this to route reply packets
      * @return Identifier of the mix node in binary format.
      */
-    public byte[] encodeNode(int idnum, long uuid) throws SphinxException {
+    public byte[] encodeNode(int idnum, long additionalInfo) throws SphinxException {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
         try {
@@ -63,7 +63,7 @@ public class SphinxClient {
             packer.packArrayHeader(4);
             packer.packString(RoutingFlag.RELAY.value()); //2 bytes
             packer.packInt(idnum); //2 bytes
-            packer.packLong(uuid); //4 bytes
+            packer.packLong(additionalInfo); //4 bytes
             packer.close();
         } catch (IOException ex) {
             throw new SphinxException("Failed to encode node");
